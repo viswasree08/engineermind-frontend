@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>EngineerMind AI — Engineering Workflow Intelligence</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+  <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap)" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
     .mono { font-family: 'JetBrains Mono', monospace; }
@@ -24,10 +24,10 @@
       <span class="ml-3 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Phase 1 Core CFD</span>
     </div>
     <div class="flex items-center gap-3">
-      <div id="caseStatusPill" class="hidden text-xs px-3 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300">
+      <div id="caseStatusPill" style="display: none;" class="text-xs px-3 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300">
         Case: <span id="displayTitle" class="text-white font-medium">None</span> • <span id="displaySoftware" class="text-emerald-400">ANSYS Fluent</span>
       </div>
-      <button onclick="openModal()" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-3 py-1.5 rounded transition shadow-sm">
+      <button id="btnNewProject" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-3 py-1.5 rounded transition shadow-sm cursor-pointer">
         + New Simulation Project
       </button>
     </div>
@@ -40,25 +40,25 @@
     <aside class="w-64 border-r border-slate-800 bg-slate-900/30 p-4 flex flex-col gap-2">
       <h2 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Workflow Stages</h2>
       
-      <button onclick="switchStage(1)" id="stepBtn-1" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium bg-slate-800 text-white border border-slate-700 flex items-center justify-between">
+      <button id="nav-step-1" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium bg-slate-800 text-white border border-slate-700 flex items-center justify-between cursor-pointer">
         <span>1. Geometry & Bounds</span>
-        <span class="text-[10px] text-emerald-400 font-mono">Active</span>
+        <span id="badge-1" class="text-[10px] text-emerald-400 font-mono">Active</span>
       </button>
-      <button onclick="switchStage(2)" id="stepBtn-2" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between">
+      <button id="nav-step-2" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between cursor-pointer">
         <span>2. Meshing & y+ Sizing</span>
-        <span class="text-[10px] text-slate-500 font-mono">Pending</span>
+        <span id="badge-2" class="text-[10px] text-slate-500 font-mono">Pending</span>
       </button>
-      <button onclick="switchStage(3)" id="stepBtn-3" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between">
+      <button id="nav-step-3" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between cursor-pointer">
         <span>3. Solver & Physics</span>
-        <span class="text-[10px] text-slate-500 font-mono">Pending</span>
+        <span id="badge-3" class="text-[10px] text-slate-500 font-mono">Pending</span>
       </button>
-      <button onclick="switchStage(4)" id="stepBtn-4" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between">
+      <button id="nav-step-4" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between cursor-pointer">
         <span>4. Output Diagnostics</span>
-        <span class="text-[10px] text-slate-500 font-mono">Pending</span>
+        <span id="badge-4" class="text-[10px] text-slate-500 font-mono">Pending</span>
       </button>
-      <button onclick="switchStage(5)" id="stepBtn-5" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between">
+      <button id="nav-step-5" class="stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between cursor-pointer">
         <span>5. Validation & Record</span>
-        <span class="text-[10px] text-slate-500 font-mono">Pending</span>
+        <span id="badge-5" class="text-[10px] text-slate-500 font-mono">Pending</span>
       </button>
     </aside>
 
@@ -93,20 +93,20 @@
         <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-2 text-xs">
           <h3 class="font-bold text-white">Senior Engineer Rule: Blunt Trailing Edge Defeaturing</h3>
           <p class="text-slate-300 leading-relaxed">
-            If your airfoil has an infinitely sharp trailing edge, CFD meshers will generate highly skewed, zero-volume prism cells. Apply a slight blunt edge radius (minimum 0.1% chord = <span id="calcBlunt">1.00</span> mm) before domain subtraction.
+            If your airfoil has an infinitely sharp trailing edge, CFD meshers generate highly skewed, zero-volume prism cells. Apply a slight blunt edge radius (minimum 0.1% chord = <span id="calcBlunt">1.00</span> mm) before fluid domain subtraction.
           </p>
         </div>
 
-        <button onclick="switchStage(2)" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2 rounded">
+        <button id="btnProceedStage2" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2 rounded cursor-pointer">
           Confirm Geometry & Proceed to Meshing →
         </button>
       </div>
 
       <!-- STAGE 2: MESHING & BOUNDARY LAYER -->
-      <div id="stage-2" class="stage-card hidden space-y-4">
+      <div id="stage-2" class="stage-card space-y-4" style="display: none;">
         <div class="border-b border-slate-800 pb-3">
           <h2 class="text-lg font-bold text-white">Stage 2: Meshing Strategy & Viscous Sublayer Resolution</h2>
-          <p class="text-xs text-slate-400">Calculate initial cell height to guarantee y+ ≤ 1.0 for low-Reynolds turbulence models.</p>
+          <p class="text-xs text-slate-400">Calculate initial cell height to guarantee y+ &le; 1.0 for low-Reynolds turbulence models.</p>
         </div>
 
         <div class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-3">
@@ -137,13 +137,13 @@
           </ul>
         </div>
 
-        <button onclick="switchStage(3)" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2 rounded">
+        <button id="btnProceedStage3" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2 rounded cursor-pointer">
           Confirm Mesh Specs & Proceed to Solver Setup →
         </button>
       </div>
 
       <!-- STAGE 3: SOLVER SETUP -->
-      <div id="stage-3" class="stage-card hidden space-y-4">
+      <div id="stage-3" class="stage-card space-y-4" style="display: none;">
         <div class="border-b border-slate-800 pb-3">
           <h2 class="text-lg font-bold text-white">Stage 3: Solver Configuration & Numerical Schemes</h2>
           <p class="text-xs text-slate-400">Prescribe governing equations and schemes based on flow regime and Reynolds number.</p>
@@ -165,13 +165,13 @@
           </div>
         </div>
 
-        <button onclick="switchStage(4)" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2 rounded">
+        <button id="btnProceedStage4" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2 rounded cursor-pointer">
           Run Solve in CAE & Proceed to Diagnostics →
         </button>
       </div>
 
       <!-- STAGE 4: RESULT DIAGNOSTICS -->
-      <div id="stage-4" class="stage-card hidden space-y-4">
+      <div id="stage-4" class="stage-card space-y-4" style="display: none;">
         <div class="border-b border-slate-800 pb-3">
           <h2 class="text-lg font-bold text-white">Stage 4: Residuals & Force History Diagnostics</h2>
           <p class="text-xs text-slate-400">Audit convergence deterministically. Separate numerical decay from physical unsteadiness.</p>
@@ -179,28 +179,28 @@
 
         <div class="border-2 border-dashed border-slate-800 rounded-lg p-6 text-center space-y-2">
           <p class="text-xs text-slate-400">Upload Solver Run Artifacts (fluent.log or forces.csv)</p>
-          <input type="file" id="fileUpload" class="hidden" onchange="simulateUpload()" />
-          <button onclick="document.getElementById('fileUpload').click()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded border border-slate-700">
+          <input type="file" id="fileUpload" style="display: none;" />
+          <button id="btnSelectFile" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-3 py-1.5 rounded border border-slate-700 cursor-pointer">
             Select Output Log / CSV
           </button>
         </div>
 
-        <div id="diagResults" class="hidden bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-2 text-xs">
+        <div id="diagResults" style="display: none;" class="bg-slate-900 border border-slate-800 rounded-lg p-4 space-y-2 text-xs">
           <h3 class="font-bold text-white">Deterministic Convergence Audit</h3>
           <div class="grid grid-cols-2 gap-2 mono mt-2">
             <div class="p-2 bg-slate-950 rounded">Continuity Residual: <span class="text-emerald-400">8.4e-6 (PASSED)</span></div>
-            <div class="p-2 bg-slate-950 rounded">Drag Stability (σ): <span class="text-emerald-400">±0.00004 (PASSED)</span></div>
+            <div class="p-2 bg-slate-950 rounded">Drag Stability (σ): <span class="text-emerald-400">&plusmn;0.00004 (PASSED)</span></div>
           </div>
           <p class="text-emerald-400 font-semibold mt-2">Status: Numerical convergence confirmed with force monitor asymptotic stability.</p>
         </div>
 
-        <button onclick="switchStage(5)" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2 rounded">
+        <button id="btnProceedStage5" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-2 rounded cursor-pointer">
           Proceed to Benchmark Validation →
         </button>
       </div>
 
       <!-- STAGE 5: VALIDATION & DECISION RECORD -->
-      <div id="stage-5" class="stage-card hidden space-y-4">
+      <div id="stage-5" class="stage-card space-y-4" style="display: none;">
         <div class="border-b border-slate-800 pb-3">
           <h2 class="text-lg font-bold text-white">Stage 5: Experimental Benchmark Validation</h2>
           <p class="text-xs text-slate-400">Compare simulation outputs against NASA TM 4074 experimental wind tunnel datasets.</p>
@@ -239,7 +239,7 @@
         <div class="p-4 bg-emerald-950/30 border border-emerald-500/30 rounded-lg text-xs space-y-2">
           <h3 class="font-bold text-emerald-400">Engineering Decision Record: VALIDATED</h3>
           <p class="text-slate-300 leading-relaxed">
-            The external aerodynamic case has passed numerical residual tolerances (< 10⁻⁵), asymptotic force stability, wall y+ resolution (≤ 1.0), and matches experimental lift/drag within 5% error tolerance.
+            The external aerodynamic case has passed numerical residual tolerances (&lt; 10⁻⁵), asymptotic force stability, wall y+ resolution (&le; 1.0), and matches experimental lift/drag within 5% error tolerance.
           </p>
         </div>
       </div>
@@ -276,7 +276,7 @@
   </main>
 
   <!-- MODAL: NEW SIMULATION INTAKE -->
-  <div id="intakeModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div id="intakeModal" style="display: none;" class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-md w-full p-6 space-y-4 shadow-2xl">
       <div class="border-b border-slate-800 pb-3">
         <h3 class="text-base font-bold text-white">Initialize Aerodynamics Case</h3>
@@ -309,8 +309,8 @@
       </div>
 
       <div class="flex justify-end gap-2 pt-3 border-t border-slate-800">
-        <button onclick="closeModal()" class="text-xs px-3 py-1.5 text-slate-400 hover:text-white">Cancel</button>
-        <button onclick="submitProject()" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-1.5 rounded">
+        <button id="btnCancelModal" class="text-xs px-3 py-1.5 text-slate-400 hover:text-white cursor-pointer">Cancel</button>
+        <button id="btnSubmitModal" class="text-xs bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold px-4 py-1.5 rounded cursor-pointer">
           Calculate & Launch Workspace
         </button>
       </div>
@@ -318,75 +318,153 @@
   </div>
 
   <script>
-    const RENDER_BACKEND_URL = "https://engineermind-backend-dair.onrender.com"; // Your live backend
+    // Configuration: replace with your exact backend URL
+    const RENDER_BACKEND_URL = "[https://engineermind-backend-dair.onrender.com](https://engineermind-backend-dair.onrender.com)";
 
-    function openModal() { document.getElementById('intakeModal').classList.remove('hidden'); }
-    function closeModal() { document.getElementById('intakeModal').classList.add('hidden'); }
-
-    function switchStage(stageNum) {
-      document.querySelectorAll('.stage-card').forEach(el => el.classList.add('hidden'));
-      document.getElementById(`stage-${stageNum}`).classList.remove('hidden');
-
-      document.querySelectorAll('.stage-btn').forEach((btn, idx) => {
-        if (idx + 1 === stageNum) {
-          btn.className = "stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium bg-slate-800 text-white border border-slate-700 flex items-center justify-between";
-        } else {
-          btn.className = "stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between";
-        }
-      });
+    function showModal() {
+      document.getElementById('intakeModal').style.display = 'flex';
     }
 
-    async function submitProject() {
-      const title = document.getElementById('modalTitle').value;
+    function hideModal() {
+      document.getElementById('intakeModal').style.display = 'none';
+    }
+
+    function goToStage(num) {
+      // Hide all stages
+      for (let i = 1; i <= 5; i++) {
+        const stageEl = document.getElementById('stage-' + i);
+        if (stageEl) stageEl.style.display = 'none';
+
+        const navBtn = document.getElementById('nav-step-' + i);
+        const badge = document.getElementById('badge-' + i);
+        if (navBtn && badge) {
+          if (i === num) {
+            navBtn.className = "stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium bg-slate-800 text-white border border-slate-700 flex items-center justify-between cursor-pointer";
+            badge.className = "text-[10px] text-emerald-400 font-mono";
+            badge.innerText = "Active";
+          } else {
+            navBtn.className = "stage-btn w-full text-left p-2.5 rounded-lg text-xs font-medium text-slate-400 hover:bg-slate-800/50 flex items-center justify-between cursor-pointer";
+            if (i < num) {
+              badge.className = "text-[10px] text-emerald-500 font-mono";
+              badge.innerText = "Done";
+            } else {
+              badge.className = "text-[10px] text-slate-500 font-mono";
+              badge.innerText = "Pending";
+            }
+          }
+        }
+      }
+      // Show selected stage
+      const targetEl = document.getElementById('stage-' + num);
+      if (targetEl) targetEl.style.display = 'block';
+    }
+
+    // Local physics math fallback in case Render takes 30s to wake up on free tier
+    function calculateLocalAerodynamics(v, c) {
+      const rho = 1.225;
+      const mu = 1.789e-5;
+      const re = (rho * v * c) / mu;
+      const mach = v / 340.3;
+      const regime = (mach < 0.3) ? "Incompressible Turbulent" : "Compressible Subsonic";
+      const delta = (0.37 * c) / Math.pow(re, 0.2);
+      const cf = 0.0583 * Math.pow(re, -0.2);
+      const tau_w = 0.5 * rho * Math.pow(v, 2) * cf;
+      const u_tau = Math.sqrt(tau_w / rho);
+      const delta_s = (1.0 * mu) / (rho * u_tau);
+
+      return {
+        reynolds_number: Math.round(re),
+        mach_number: Number(mach.toFixed(3)),
+        flow_regime: regime,
+        boundary_layer_thickness_mm: Number((delta * 1000).toFixed(2)),
+        first_cell_height_mm: Number((delta_s * 1000).toFixed(5)),
+        inlet_distance_m: Number((c * 15).toFixed(2)),
+        outlet_distance_m: Number((c * 25).toFixed(2)),
+        lateral_distance_m: Number((c * 15).toFixed(2)),
+        recommended_turbulence_model: "k-omega SST (Menter)",
+        senior_engineer_rationale: "External aerodynamics involves adverse pressure gradients. Standard k-epsilon overpredicts eddy viscosity and delays separation. SST k-omega resolves near-wall shear stresses accurately."
+      };
+    }
+
+    function applyPhysicsData(data, chord) {
+      document.getElementById('hudRe').innerText = data.reynolds_number.toLocaleString();
+      document.getElementById('hudMach').innerText = data.mach_number;
+      document.getElementById('hudRegime').innerText = data.flow_regime;
+      document.getElementById('hudDeltaS').innerText = data.first_cell_height_mm + ' mm';
+      document.getElementById('hudDelta').innerText = data.boundary_layer_thickness_mm + ' mm';
+
+      document.getElementById('cardChord').innerText = chord;
+      document.getElementById('calcInlet').innerText = data.inlet_distance_m + ' m';
+      document.getElementById('calcOutlet').innerText = data.outlet_distance_m + ' m';
+      document.getElementById('calcLateral').innerText = data.lateral_distance_m + ' m';
+      document.getElementById('calcBlunt').innerText = (chord * 1.0).toFixed(2);
+
+      document.getElementById('calcDeltaS').innerText = data.first_cell_height_mm + ' mm';
+      document.getElementById('calcDelta').innerText = data.boundary_layer_thickness_mm + ' mm';
+
+      document.getElementById('calcTurbModel').innerText = data.recommended_turbulence_model;
+      document.getElementById('calcRationale').innerText = data.senior_engineer_rationale;
+    }
+
+    async function handleProjectSubmit() {
+      const title = document.getElementById('modalTitle').value || "External CFD Aerodynamics";
       const software = document.getElementById('modalSoftware').value;
-      const velocity = parseFloat(document.getElementById('modalVelocity').value);
-      const chord = parseFloat(document.getElementById('modalChord').value);
+      const v = parseFloat(document.getElementById('modalVelocity').value) || 45;
+      const c = parseFloat(document.getElementById('modalChord').value) || 1.0;
 
       document.getElementById('displayTitle').innerText = title;
       document.getElementById('displaySoftware').innerText = software;
-      document.getElementById('cardChord').innerText = chord;
-      document.getElementById('caseStatusPill').classList.remove('hidden');
+      document.getElementById('caseStatusPill').style.display = 'block';
 
+      // 1. Immediately apply local deterministic math
+      const localData = calculateLocalAerodynamics(v, c);
+      applyPhysicsData(localData, c);
+
+      // 2. Query live Render backend
       try {
-        const res = await fetch(`${https://engineermind-backend.onrender.com}/calculate-physics`, {
+        const response = await fetch(`${RENDER_BACKEND_URL}/calculate-physics`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ velocity: velocity, chord_length: chord })
+          body: JSON.stringify({ velocity: v, chord_length: c })
         });
-        const data = await res.json();
-
-        // Update Live HUD
-        document.getElementById('hudRe').innerText = data.reynolds_number.toLocaleString();
-        document.getElementById('hudMach').innerText = data.mach_number;
-        document.getElementById('hudRegime').innerText = data.flow_regime;
-        document.getElementById('hudDeltaS').innerText = data.first_cell_height_mm + ' mm';
-        document.getElementById('hudDelta').innerText = data.boundary_layer_thickness_mm + ' mm';
-
-        // Update Stage 1 Bounds
-        document.getElementById('calcInlet').innerText = data.inlet_distance_m + ' m';
-        document.getElementById('calcOutlet').innerText = data.outlet_distance_m + ' m';
-        document.getElementById('calcLateral').innerText = data.lateral_distance_m + ' m';
-        document.getElementById('calcBlunt').innerText = (chord * 1.0).toFixed(2);
-
-        // Update Stage 2 Meshing
-        document.getElementById('calcDeltaS').innerText = data.first_cell_height_mm + ' mm';
-        document.getElementById('calcDelta').innerText = data.boundary_layer_thickness_mm + ' mm';
-
-        // Update Stage 3 Solver
-        document.getElementById('calcTurbModel').innerText = data.recommended_turbulence_model;
-        document.getElementById('calcRationale').innerText = data.senior_engineer_rationale;
-
+        if (response.ok) {
+          const cloudData = await response.json();
+          applyPhysicsData(cloudData, c);
+        }
       } catch (err) {
-        console.warn("Backend API offline, using browser fallback calculations:", err);
+        console.log("Using local calculation engine:", err);
       }
 
-      closeModal();
-      switchStage(1);
+      hideModal();
+      goToStage(1);
     }
 
-    function simulateUpload() {
-      document.getElementById('diagResults').classList.remove('hidden');
-    }
+    // Attach event listeners once DOM is ready
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('btnNewProject').addEventListener('click', showModal);
+      document.getElementById('btnCancelModal').addEventListener('click', hideModal);
+      document.getElementById('btnSubmitModal').addEventListener('click', handleProjectSubmit);
+
+      document.getElementById('nav-step-1').addEventListener('click', () => goToStage(1));
+      document.getElementById('nav-step-2').addEventListener('click', () => goToStage(2));
+      document.getElementById('nav-step-3').addEventListener('click', () => goToStage(3));
+      document.getElementById('nav-step-4').addEventListener('click', () => goToStage(4));
+      document.getElementById('nav-step-5').addEventListener('click', () => goToStage(5));
+
+      document.getElementById('btnProceedStage2').addEventListener('click', () => goToStage(2));
+      document.getElementById('btnProceedStage3').addEventListener('click', () => goToStage(3));
+      document.getElementById('btnProceedStage4').addEventListener('click', () => goToStage(4));
+      document.getElementById('btnProceedStage5').addEventListener('click', () => goToStage(5));
+
+      const fileBtn = document.getElementById('btnSelectFile');
+      const fileInput = document.getElementById('fileUpload');
+      if (fileBtn && fileInput) {
+        fileBtn.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => {
+          document.getElementById('diagResults').style.display = 'block';
+        });
+      }
+    });
   </script>
 </body>
 </html>
