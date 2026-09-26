@@ -98,7 +98,7 @@
 
     <!-- DYNAMIC ACTION CANVAS -->
     <section class="canvas" id="mainCanvas">
-      <!-- Injected entirely by JavaScript to eliminate stale/hardcoded states -->
+      <!-- Injected entirely by JavaScript to reflect active solver -->
     </section>
 
     <!-- RIGHT HUD (DETERMINISTIC PHYSICS) -->
@@ -178,7 +178,7 @@
   </div>
 
   <script>
-    // System State Management
+    // Global State Management
     const state = {
       solver: "OpenFOAM",
       cadName: "dronewing.stl",
@@ -531,7 +531,6 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
           <button onclick="goToStage(5)" class="btn-primary">Proceed to Benchmark Validation →</button>
         `;
 
-        // Wire dynamic file upload for Stage 4
         const fInput = document.getElementById('diagFileInput');
         if (fInput) {
           fInput.onchange = async (e) => {
@@ -680,12 +679,26 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
       return 1.8;
     }
 
+    function openModal() {
+      // Sync modal inputs with active state
+      document.getElementById('mSoftware').value = state.solver;
+      document.getElementById('mVelocity').value = state.velocity;
+      document.getElementById('mChord').value = state.flowLength;
+      document.getElementById('intakeModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('intakeModal').style.display = 'none';
+    }
+
     async function handleLaunch() {
       try {
         // Read user inputs explicitly
-        state.solver = document.getElementById('mSoftware').value;
+        const chosenSolver = document.getElementById('mSoftware').value;
         const v = parseFloat(document.getElementById('mVelocity').value) || 40;
         let flowLength = parseFloat(document.getElementById('mChord').value) || 1.8;
+
+        state.solver = chosenSolver;
 
         if (currentCADFile) {
           state.cadName = currentCADFile.name;
@@ -693,8 +706,6 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
             const fileText = await currentCADFile.text();
             flowLength = parseSTLSync(fileText);
           } catch (e) {}
-        } else {
-          state.cadName = "NACA 0012 Default";
         }
 
         // Run calculations & re-render workspace
@@ -705,18 +716,18 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
       } catch (err) {
         console.error("Launch exception:", err);
       } finally {
-        document.getElementById('intakeModal').style.display = 'none';
+        closeModal();
       }
     }
 
     window.onload = function() {
-      // Initialize with OpenFOAM by default
+      // Initial calculation & render
       calculatePhysics(40, 1.8);
       renderCurrentStage();
 
       // Modal triggers
-      document.getElementById('btnOpenModal').onclick = () => { document.getElementById('intakeModal').style.display = 'flex'; };
-      document.getElementById('btnCancelModal').onclick = () => { document.getElementById('intakeModal').style.display = 'none'; };
+      document.getElementById('btnOpenModal').onclick = openModal;
+      document.getElementById('btnCancelModal').onclick = closeModal;
       document.getElementById('btnSubmitModal').onclick = handleLaunch;
 
       // CAD upload trigger
