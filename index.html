@@ -40,9 +40,9 @@
     .stat-value { font-size: 15px; font-weight: 700; color: #6ee7b7; }
 
     .code-box { background: #090d16; border: 1px solid #334155; border-radius: 6px; padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: #38bdf8; overflow-x: auto; line-height: 1.6; white-space: pre-wrap; margin-top: 6px; margin-bottom: 10px; }
-    .step-item { background: #090d16; border: 1px solid #1e293b; border-radius: 6px; padding: 12px; margin-bottom: 10px; }
+    .step-item { background: #090d16; border: 1px solid #1e293b; border-radius: 6px; padding: 14px; margin-bottom: 12px; }
     .step-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 12px; color: #f8fafc; margin-bottom: 6px; }
-    .step-badge { background: #1e293b; color: #94a3b8; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+    .step-badge { background: #1e293b; color: #38bdf8; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-family: monospace; border: 1px solid #334155; }
 
     #intakeModal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 100; }
     .modal-content { background: #0f172a; border: 1px solid #334155; border-radius: 12px; width: 100%; max-width: 480px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
@@ -90,9 +90,9 @@
     <!-- NAVIGATION SIDEBAR -->
     <aside class="sidebar">
       <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Workflow Stages</div>
-      <button class="stage-nav active" id="nav-1"><span id="navText-1">1. CAD & Domain Prep</span><span class="status" id="badge-1">Active</span></button>
-      <button class="stage-nav" id="nav-2"><span id="navText-2">2. Meshing & y+ Sizing</span><span class="status" id="badge-2">Pending</span></button>
-      <button class="stage-nav" id="nav-3"><span id="navText-3">3. Solver & Physics</span><span class="status" id="badge-3">Pending</span></button>
+      <button class="stage-nav active" id="nav-1"><span>1. CAD & Domain Prep</span><span class="status" id="badge-1">Active</span></button>
+      <button class="stage-nav" id="nav-2"><span>2. Meshing & y+ Sizing</span><span class="status" id="badge-2">Pending</span></button>
+      <button class="stage-nav" id="nav-3"><span>3. Solver & Physics</span><span class="status" id="badge-3">Pending</span></button>
       <button class="stage-nav" id="nav-4"><span>4. Output Diagnostics</span><span class="status" id="badge-4">Pending</span></button>
       <button class="stage-nav" id="nav-5"><span>5. Validation & Record</span><span class="status" id="badge-5">Pending</span></button>
     </aside>
@@ -103,7 +103,7 @@
       <!-- STAGE 1: GEOMETRY & DOMAIN -->
       <div id="stage-1" class="stage-view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h2 id="stage1Heading" style="font-size: 18px; font-weight: 700;">Stage 1: Geometry Review & Computational Domain Sizing</h2>
+          <h2 style="font-size: 18px; font-weight: 700;">Stage 1: Geometry Review & Computational Domain Sizing</h2>
           <span id="badgeStage1Solver" class="pill-solver">OpenFOAM Setup</span>
         </div>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Inspect uploaded CAD dimensions and establish boundary limits to prevent boundary blockage errors.</p>
@@ -125,10 +125,7 @@
             <div class="stat-box"><span class="stat-label">Farfield Height (15 * Lx)</span><span class="stat-value" id="calcLateral">27.00 m</span></div>
           </div>
 
-          <!-- Dynamic Solver Step-by-Step Instructions -->
-          <div id="stage1SolverSteps">
-            <!-- Injected via JavaScript based on software -->
-          </div>
+          <div id="stage1SolverSteps"></div>
         </div>
 
         <div class="card" style="font-size: 12px; line-height: 1.6;">
@@ -144,7 +141,7 @@
       <!-- STAGE 2: MESHING & BOUNDARY LAYER -->
       <div id="stage-2" class="stage-view" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h2 id="stage2Heading" style="font-size: 18px; font-weight: 700;">Stage 2: Meshing Strategy & Viscous Sublayer Resolution</h2>
+          <h2 style="font-size: 18px; font-weight: 700;">Stage 2: Meshing Strategy & Viscous Sublayer Resolution</h2>
           <span id="badgeStage2Solver" class="pill-solver">OpenFOAM Setup</span>
         </div>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Calculate boundary layer height ensuring y+ &le; 1.0 for low-Re SST turbulence models.</p>
@@ -152,15 +149,12 @@
         <div class="card">
           <div class="card-title">Analytical Boundary Layer Resolution</div>
           <div class="grid-3" style="margin-bottom: 14px;">
-            <div class="stat-box"><span class="stat-label">First Cell Height (Δs)</span><span class="stat-value" id="calcDeltaS">0.00848 mm</span></div>
-            <div class="stat-box"><span class="stat-label">Boundary Layer (δ)</span><span class="stat-value" id="calcDelta">30.34 mm</span></div>
+            <div class="stat-box"><span class="stat-label">First Cell Height (Δs)</span><span class="stat-value" id="calcDeltaS">0.00755 mm</span></div>
+            <div class="stat-box"><span class="stat-label">Boundary Layer (δ)</span><span class="stat-value" id="calcDelta">29.62 mm</span></div>
             <div class="stat-box"><span class="stat-label">Prism Layers / Growth</span><span class="stat-value" style="color:#fff;">28 layers (r=1.15)</span></div>
           </div>
 
-          <!-- Dynamic Meshing Steps -->
-          <div id="stage2SolverSteps">
-            <!-- Injected via JavaScript based on software -->
-          </div>
+          <div id="stage2SolverSteps"></div>
         </div>
 
         <div class="card" style="font-size: 12px;">
@@ -179,7 +173,7 @@
       <!-- STAGE 3: SOLVER SETUP -->
       <div id="stage-3" class="stage-view" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h2 id="stage3Heading" style="font-size: 18px; font-weight: 700;">Stage 3: Solver Configuration & Numerical Schemes</h2>
+          <h2 style="font-size: 18px; font-weight: 700;">Stage 3: Solver Configuration & Numerical Schemes</h2>
           <span id="badgeStage3Solver" class="pill-solver">OpenFOAM Setup</span>
         </div>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Prescribe governing equations and schemes based on flow regime and Reynolds number.</p>
@@ -194,9 +188,7 @@
 
         <div class="card">
           <div class="card-title">Step-by-Step Solver Configuration Protocol</div>
-          <div id="stage3SolverSteps">
-            <!-- Injected via JavaScript based on software -->
-          </div>
+          <div id="stage3SolverSteps"></div>
         </div>
 
         <button id="btnGoStage4" class="btn-primary">Run Solve in CAE & Proceed to Diagnostics →</button>
@@ -310,7 +302,7 @@
       <div style="display: flex; flex-direction: column; gap: 10px;">
         <div class="stat-box">
           <span class="stat-label">Reynolds Number (Re)</span>
-          <span class="stat-value" id="hudRe" style="color: #fff;">4,933,482</span>
+          <span class="stat-value" id="hudRe" style="color: #fff;">4,930,129</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">Mach Number (Ma)</span>
@@ -319,11 +311,11 @@
         </div>
         <div class="stat-box">
           <span class="stat-label">First Cell Height (y+ = 1)</span>
-          <span class="stat-value" id="hudDeltaS">0.00848 mm</span>
+          <span class="stat-value" id="hudDeltaS">0.00755 mm</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">Boundary Layer (δ)</span>
-          <span class="stat-value" id="hudDelta" style="color: #fff;">30.34 mm</span>
+          <span class="stat-value" id="hudDelta" style="color: #fff;">29.62 mm</span>
         </div>
       </div>
     </aside>
@@ -379,13 +371,23 @@
   </div>
 
   <script>
-    const BACKEND_URL = "https://engineermind-backend-dair.onrender.com";
+    // State management
+    const state = {
+      solver: "OpenFOAM",
+      cadName: "dronewing.stl",
+      flowLength: 1.8,
+      velocity: 40,
+      deltaS_mm: 0.00755,
+      delta_mm: 29.62,
+      re: 4930129,
+      mach: 0.118,
+      regime: "Incompressible Turbulent",
+      parsedCd: 0.00850,
+      parsedCl: 0.4480,
+      caseStatus: "PASSED"
+    };
 
     let currentCADFile = null;
-    let selectedSolver = "OpenFOAM";
-    let parsedCd = 0.00850;
-    let parsedCl = 0.4480;
-    let lastCaseStatus = "PASSED";
 
     function setStage(n) {
       for (let i = 1; i <= 5; i++) {
@@ -393,7 +395,7 @@
         const navEl = document.getElementById('nav-' + i);
         const badgeEl = document.getElementById('badge-' + i);
         if (stageEl) stageEl.style.display = (i === n) ? 'block' : 'none';
-        if (navEl) {
+        if (navEl && badgeEl) {
           if (i === n) {
             navEl.className = 'stage-nav active';
             badgeEl.innerText = 'Active';
@@ -413,41 +415,7 @@
       if (n === 5) updateValidationStage();
     }
 
-    function updateValidationStage() {
-      const expCl = 0.4400;
-      const expCd = 0.00820;
-      const errCl = (((parsedCl - expCl) / expCl) * 100).toFixed(2);
-      const errCd = (((parsedCd - expCd) / expCd) * 100).toFixed(2);
-
-      document.getElementById('tableCl').innerText = parsedCl.toFixed(4);
-      document.getElementById('tableCd').innerText = parsedCd.toFixed(5);
-      document.getElementById('tableClErr').innerText = (errCl >= 0 ? "+" : "") + errCl + "%";
-      document.getElementById('tableCdErr').innerText = (errCd >= 0 ? "+" : "") + errCd + "%";
-
-      if (lastCaseStatus === "ANOMALY") {
-        document.getElementById('recordTitle').innerText = "Engineering Decision Record: REJECTED (PHYSICAL UNSTEADINESS)";
-        document.getElementById('recordTitle').style.color = "#fb7185";
-        document.getElementById('recordContainer').style.borderColor = "rgba(244, 63, 94, 0.4)";
-        document.getElementById('recordContainer').style.background = "rgba(136, 19, 55, 0.2)";
-        document.getElementById('recordSummary').innerText = `Simulation rejected in ${selectedSolver}. Unsteady suction vortex shedding observed. Steady RANS cannot resolve this regime; rerun in URANS/DES.`;
-        document.getElementById('recAuditStatus').innerText = "REJECTED";
-        document.getElementById('recAuditStatus').style.color = "#fb7185";
-        document.getElementById('verdictCdBadge').innerText = "SUSPECT";
-        document.getElementById('verdictCdBadge').style.color = "#fb7185";
-      } else {
-        document.getElementById('recordTitle').innerText = "Engineering Decision Record: VALIDATED FOR DESIGN USE";
-        document.getElementById('recordTitle').style.color = "#34d399";
-        document.getElementById('recordContainer').style.borderColor = "rgba(16, 185, 129, 0.4)";
-        document.getElementById('recordContainer').style.background = "rgba(6, 78, 59, 0.15)";
-        document.getElementById('recordSummary').innerText = `Valid steady-state aerodynamic solution in ${selectedSolver}. Viscous sublayer resolved (y+ <= 1.0), force monitors stable, and matches wind tunnel benchmark within 5% error tolerance.`;
-        document.getElementById('recAuditStatus').innerText = "APPROVED";
-        document.getElementById('recAuditStatus').style.color = "#34d399";
-        document.getElementById('verdictCdBadge').innerText = "PASS (<5%)";
-        document.getElementById('verdictCdBadge').style.color = "#34d399";
-      }
-    }
-
-    function calculateLocal(v, c) {
+    function calculatePhysics(v, c) {
       const rho = 1.225;
       const mu = 1.789e-5;
       const re = (rho * v * c) / mu;
@@ -459,53 +427,67 @@
       const u_tau = Math.sqrt(tau_w / rho);
       const delta_s = (1.0 * mu) / (rho * u_tau);
 
-      return {
-        reynolds_number: Math.round(re),
-        mach_number: Number(mach.toFixed(3)),
-        flow_regime: regime,
-        boundary_layer_thickness_mm: Number((delta * 1000).toFixed(2)),
-        first_cell_height_mm: Number((delta_s * 1000).toFixed(5)),
-        inlet_distance_m: Number((c * 15).toFixed(2)),
-        outlet_distance_m: Number((c * 25).toFixed(2)),
-        lateral_distance_m: Number((c * 15).toFixed(2)),
-        recommended_turbulence_model: "k-omega SST (Menter)",
-        senior_engineer_rationale: "SST k-omega resolved with y+ <= 1 accurately captures adverse pressure gradients and boundary layer separation."
-      };
+      state.re = Math.round(re);
+      state.mach = Number(mach.toFixed(3));
+      state.regime = regime;
+      state.delta_mm = Number((delta * 1000).toFixed(2));
+      state.deltaS_mm = Number((delta_s * 1000).toFixed(5));
+      state.velocity = v;
+      state.flowLength = c;
     }
 
-    function renderDynamicSolverInstructions(solver, deltaS, flowLength) {
-      // Badges
-      const solverLabel = `${solver} Protocol`;
-      document.getElementById('badgeStage1Solver').innerText = solverLabel;
-      document.getElementById('badgeStage2Solver').innerText = solverLabel;
-      document.getElementById('badgeStage3Solver').innerText = solverLabel;
-      document.getElementById('badgeStage4Solver').innerText = `${solver} Audit`;
-      document.getElementById('recModelText').innerText = `${solver} / k-omega SST`;
+    function renderActiveWorkspace() {
+      // 1. Top Badges & Pills
+      document.getElementById('displayCAD').innerText = state.cadName;
+      document.getElementById('displaySoftware').innerText = state.solver;
+      document.getElementById('caseStatusPill').style.display = 'block';
 
-      // STAGE 1 STEPS
+      const solverBadgeText = `${state.solver} Setup`;
+      document.getElementById('badgeStage1Solver').innerText = solverBadgeText;
+      document.getElementById('badgeStage2Solver').innerText = solverBadgeText;
+      document.getElementById('badgeStage3Solver').innerText = solverBadgeText;
+      document.getElementById('badgeStage4Solver').innerText = `${state.solver} Audit`;
+      document.getElementById('recModelText').innerText = `${state.solver} / k-omega SST`;
+
+      // 2. HUD Metrics
+      document.getElementById('hudRe').innerText = state.re.toLocaleString();
+      document.getElementById('hudMach').innerText = state.mach;
+      document.getElementById('hudRegime').innerText = state.regime;
+      document.getElementById('hudDeltaS').innerText = state.deltaS_mm + ' mm';
+      document.getElementById('hudDelta').innerText = state.delta_mm + ' mm';
+
+      // 3. Stage 1 Domain Values
+      const c = state.flowLength;
+      document.getElementById('cadLx').innerText = c.toFixed(3) + " m";
+      document.getElementById('calcInlet').innerText = (c * 15).toFixed(2) + " m";
+      document.getElementById('calcOutlet').innerText = (c * 25).toFixed(2) + " m";
+      document.getElementById('calcLateral').innerText = (c * 15).toFixed(2) + " m";
+      document.getElementById('calcBlunt').innerText = (c * 1.0).toFixed(2);
+
+      // 4. Stage 1 Solver Steps
       const s1 = document.getElementById('stage1SolverSteps');
-      if (solver === "OpenFOAM") {
+      if (state.solver === "OpenFOAM") {
         s1.innerHTML = `
           <div class="step-item">
             <div class="step-header"><span>Step 1.1: Case Directory Initialization</span><span class="step-badge">Terminal</span></div>
-            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Create the standard OpenFOAM case hierarchy on your machine:</p>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Create standard OpenFOAM directory tree:</p>
             <div class="code-box">mkdir -p openfoam_case/{0,constant,system}
 cd openfoam_case</div>
           </div>
           <div class="step-item">
-            <div class="step-header"><span>Step 1.2: Background Mesh Generation (system/blockMeshDict)</span><span class="step-badge">Dictionary</span></div>
-            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Configure domain bounds (-${(flowLength*15).toFixed(1)}m upstream, +${(flowLength*25).toFixed(1)}m wake) and define boundary patches:</p>
+            <div class="step-header"><span>Step 1.2: Background Mesh (system/blockMeshDict)</span><span class="step-badge">OpenFOAM File</span></div>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Configure domain bounding box (-${(c*15).toFixed(1)}m to +${(c*25).toFixed(1)}m) and define patches:</p>
             <div class="code-box">scale 1.0;
 vertices
 (
-    (-${(flowLength*15).toFixed(1)} -${(flowLength*15).toFixed(1)} 0)
-    ( ${(flowLength*25).toFixed(1)} -${(flowLength*15).toFixed(1)} 0)
-    ( ${(flowLength*25).toFixed(1)}  ${(flowLength*15).toFixed(1)} 0)
-    (-${(flowLength*15).toFixed(1)}  ${(flowLength*15).toFixed(1)} 0)
-    (-${(flowLength*15).toFixed(1)} -${(flowLength*15).toFixed(1)} 0.1)
-    ( ${(flowLength*25).toFixed(1)} -${(flowLength*15).toFixed(1)} 0.1)
-    ( ${(flowLength*25).toFixed(1)}  ${(flowLength*15).toFixed(1)} 0.1)
-    (-${(flowLength*15).toFixed(1)}  ${(flowLength*15).toFixed(1)} 0.1)
+    (-${(c*15).toFixed(1)} -${(c*15).toFixed(1)} 0)
+    ( ${(c*25).toFixed(1)} -${(c*15).toFixed(1)} 0)
+    ( ${(c*25).toFixed(1)}  ${(c*15).toFixed(1)} 0)
+    (-${(c*15).toFixed(1)}  ${(c*15).toFixed(1)} 0)
+    (-${(c*15).toFixed(1)} -${(c*15).toFixed(1)} 0.1)
+    ( ${(c*25).toFixed(1)} -${(c*15).toFixed(1)} 0.1)
+    ( ${(c*25).toFixed(1)}  ${(c*15).toFixed(1)} 0.1)
+    (-${(c*15).toFixed(1)}  ${(c*15).toFixed(1)} 0.1)
 );
 blocks ( hex (0 1 2 3 4 5 6 7) (100 80 1) simpleGrading (1 1 1) );
 boundary
@@ -517,39 +499,41 @@ boundary
 );</div>
           </div>
           <div class="step-item">
-            <div class="step-header"><span>Step 1.3: Execute Background BlockMesh</span><span class="step-badge">Terminal</span></div>
+            <div class="step-header"><span>Step 1.3: Generate Background BlockMesh</span><span class="step-badge">Terminal</span></div>
             <div class="code-box">blockMesh</div>
           </div>
         `;
       } else {
         s1.innerHTML = `
           <div class="step-item">
-            <div class="step-header"><span>Step 1.1: CAD Import & Orientation</span><span class="step-badge">SpaceClaim / CAD</span></div>
-            <p style="font-size: 11px; color: #cbd5e1;">Import your geometry. Orient chord along the X-axis (leading edge at origin) and span along the Z-axis.</p>
+            <div class="step-header"><span>Step 1.1: CAD Import & Orientation</span><span class="step-badge">SpaceClaim</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Import geometry. Align chord along X-axis (leading edge at origin) and span along Z-axis.</p>
           </div>
           <div class="step-item">
             <div class="step-header"><span>Step 1.2: Enclosure Wind Tunnel Creation</span><span class="step-badge">DesignModeler</span></div>
-            <p style="font-size: 11px; color: #cbd5e1;">Create Enclosure with dimensions: Upstream: <strong>${(flowLength*15).toFixed(1)} m</strong>, Downstream Wake: <strong>${(flowLength*25).toFixed(1)} m</strong>, Top/Bottom: <strong>${(flowLength*15).toFixed(1)} m</strong>.</p>
+            <p style="font-size: 11px; color: #cbd5e1;">Generate Enclosure: Upstream = <strong>${(c*15).toFixed(1)} m</strong>, Downstream Wake = <strong>${(c*25).toFixed(1)} m</strong>, Farfield = <strong>${(c*15).toFixed(1)} m</strong>.</p>
           </div>
           <div class="step-item">
             <div class="step-header"><span>Step 1.3: Assign Named Selections</span><span class="step-badge">Boundary Setup</span></div>
-            <p style="font-size: 11px; color: #cbd5e1;">Tag boundaries: <code class="mono" style="color:#34d399;">velocity_inlet</code>, <code class="mono" style="color:#34d399;">pressure_outlet</code>, <code class="mono" style="color:#34d399;">wing_wall</code>, and <code class="mono" style="color:#34d399;">symmetry</code>.</p>
+            <p style="font-size: 11px; color: #cbd5e1;">Tag surfaces: <code class="mono" style="color:#34d399;">velocity_inlet</code>, <code class="mono" style="color:#34d399;">pressure_outlet</code>, <code class="mono" style="color:#34d399;">wing_wall</code>, and <code class="mono" style="color:#34d399;">symmetry</code>.</p>
           </div>
         `;
       }
 
-      // STAGE 2 STEPS
+      // 5. Stage 2 Meshing Values & Steps
+      document.getElementById('calcDeltaS').innerText = state.deltaS_mm + " mm";
+      document.getElementById('calcDelta').innerText = state.delta_mm + " mm";
       const s2 = document.getElementById('stage2SolverSteps');
-      if (solver === "OpenFOAM") {
+      if (state.solver === "OpenFOAM") {
         s2.innerHTML = `
           <div class="step-item">
-            <div class="step-header"><span>Step 2.1: Surface Feature Extraction</span><span class="step-badge">system/surfaceFeaturesDict</span></div>
-            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Extract sharp geometric features from your uploaded STL file:</p>
+            <div class="step-header"><span>Step 2.1: Surface Feature Extraction</span><span class="step-badge">Terminal</span></div>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Extract sharp geometric features from uploaded STL:</p>
             <div class="code-box">surfaceFeatures</div>
           </div>
           <div class="step-item">
-            <div class="step-header"><span>Step 2.2: Viscous Layers Setup (system/snappyHexMeshDict)</span><span class="step-badge">Dictionary</span></div>
-            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Prescribe calculated first layer height <span class="mono" style="color:#34d399;">${deltaS}</span> to guarantee y+ &le; 1.0:</p>
+            <div class="step-header"><span>Step 2.2: Viscous Layers Setup (system/snappyHexMeshDict)</span><span class="step-badge">OpenFOAM File</span></div>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Prescribe calculated first layer height <span class="mono" style="color:#34d399;">${state.deltaS_mm} mm</span> to guarantee y+ &le; 1.0:</p>
             <div class="code-box">addLayersControls
 {
     relativeSizes false;
@@ -561,41 +545,41 @@ boundary
         }
     }
     expansionRatio 1.15;
-    firstLayerThickness ${deltaS}; // First layer in mm/m based on mesh scale
+    firstLayerThickness ${(state.deltaS_mm / 1000).toFixed(6)}; // meters
     minThickness 1e-6;
     nGrow 1;
 }</div>
           </div>
           <div class="step-item">
-            <div class="step-header"><span>Step 2.3: Execute SnappyHexMesh & Check Mesh Quality</span><span class="step-badge">Terminal</span></div>
+            <div class="step-header"><span>Step 2.3: Execute SnappyHexMesh & Check Mesh</span><span class="step-badge">Terminal</span></div>
             <div class="code-box">snappyHexMesh -overwrite
 checkMesh</div>
-            <p style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Senior tip: Ensure Maximum Non-Orthogonality is strictly &lt; 70 and Max Skewness &lt; 4.0.</p>
+            <p style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Ensure Non-Orthogonality is strictly &lt; 70 and Max Skewness &lt; 4.0.</p>
           </div>
         `;
       } else {
         s2.innerHTML = `
           <div class="step-item">
-            <div class="step-header"><span>Step 2.1: Body Sizing & Surface Mesh</span><span class="step-badge">ANSYS Meshing</span></div>
-            <p style="font-size: 11px; color: #cbd5e1;">Apply Face Sizing on the wing profile with Curvature Normal Angle set to 12° to capture leading-edge radius.</p>
+            <div class="step-header"><span>Step 2.1: Body Sizing & Curvature</span><span class="step-badge">ANSYS Meshing</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Apply Face Sizing on the wing profile with Curvature Normal Angle set to 12° to resolve leading-edge suction peak.</p>
           </div>
           <div class="step-item">
             <div class="step-header"><span>Step 2.2: Prism Inflation Layer Formulation</span><span class="step-badge">Inflation Control</span></div>
-            <p style="font-size: 11px; color: #cbd5e1;">Set <em>Inflation Option</em> to <strong>First Layer Height</strong> = <span class="mono" style="color:#34d399;">${deltaS}</span>, <em>Maximum Layers</em> = <strong>28</strong>, <em>Growth Rate</em> = <strong>1.15</strong>.</p>
+            <p style="font-size: 11px; color: #cbd5e1;">Set <em>Inflation Option</em> to <strong>First Layer Height</strong> = <span class="mono" style="color:#34d399;">${state.deltaS_mm} mm</span>, <em>Maximum Layers</em> = <strong>28</strong>, <em>Growth Rate</em> = <strong>1.15</strong>.</p>
           </div>
           <div class="step-item">
             <div class="step-header"><span>Step 2.3: Mesh Quality Audit</span><span class="step-badge">Verification</span></div>
-            <p style="font-size: 11px; color: #cbd5e1;">Verify Minimum Orthogonal Quality &gt; 0.20 and Maximum Aspect Ratio &lt; 1000 in the boundary layer.</p>
+            <p style="font-size: 11px; color: #cbd5e1;">Confirm Minimum Orthogonal Quality &gt; 0.20 and Maximum Aspect Ratio &lt; 1000.</p>
           </div>
         `;
       }
 
-      // STAGE 3 STEPS
+      // 6. Stage 3 Solver Steps
       const s3 = document.getElementById('stage3SolverSteps');
-      if (solver === "OpenFOAM") {
+      if (state.solver === "OpenFOAM") {
         s3.innerHTML = `
           <div class="step-item">
-            <div class="step-header"><span>Step 3.1: Turbulence Model (constant/momentumTransport)</span><span class="step-badge">Dictionary</span></div>
+            <div class="step-header"><span>Step 3.1: Turbulence Model (constant/momentumTransport)</span><span class="step-badge">OpenFOAM File</span></div>
             <div class="code-box">simulationType RAS;
 RAS
 {
@@ -605,8 +589,8 @@ RAS
 }</div>
           </div>
           <div class="step-item">
-            <div class="step-header"><span>Step 3.2: Spatial Discretization (system/fvSchemes)</span><span class="step-badge">Dictionary</span></div>
-            <p style="font-size: 11px; color: #cbd5e1;">Use Second-Order Upwind to eliminate false artificial dissipation:</p>
+            <div class="step-header"><span>Step 3.2: Spatial Discretization (system/fvSchemes)</span><span class="step-badge">OpenFOAM File</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Use Second-Order Upwind for convective terms to eliminate false artificial dissipation:</p>
             <div class="code-box">divSchemes
 {
     default         none;
@@ -617,7 +601,7 @@ RAS
           </div>
           <div class="step-item">
             <div class="step-header"><span>Step 3.3: Solver Execution & Force Monitor (simpleFoam)</span><span class="step-badge">Terminal</span></div>
-            <p style="font-size: 11px; color: #cbd5e1;">Include <code class="mono" style="color:#38bdf8;">system/controlDict</code> functionObjects for forces and launch simpleFoam:</p>
+            <p style="font-size: 11px; color: #cbd5e1;">Include forces functionObject in <code class="mono" style="color:#38bdf8;">system/controlDict</code> and launch simpleFoam:</p>
             <div class="code-box">simpleFoam > log.simpleFoam &
 foamMonitor -l postProcessing/forces/0/force.dat</div>
           </div>
@@ -642,24 +626,38 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
       }
     }
 
-    function applyPhysics(data, flowLength) {
-      document.getElementById('hudRe').innerText = data.reynolds_number.toLocaleString();
-      document.getElementById('hudMach').innerText = data.mach_number;
-      document.getElementById('hudRegime').innerText = data.flow_regime;
-      document.getElementById('hudDeltaS').innerText = data.first_cell_height_mm + ' mm';
-      document.getElementById('hudDelta').innerText = data.boundary_layer_thickness_mm + ' mm';
+    function updateValidationStage() {
+      const expCl = 0.4400;
+      const expCd = 0.00820;
+      const errCl = (((state.parsedCl - expCl) / expCl) * 100).toFixed(2);
+      const errCd = (((state.parsedCd - expCd) / expCd) * 100).toFixed(2);
 
-      document.getElementById('calcInlet').innerText = data.inlet_distance_m + ' m';
-      document.getElementById('calcOutlet').innerText = data.outlet_distance_m + ' m';
-      document.getElementById('calcLateral').innerText = data.lateral_distance_m + ' m';
-      document.getElementById('calcBlunt').innerText = (flowLength * 1.0).toFixed(2);
+      document.getElementById('tableCl').innerText = state.parsedCl.toFixed(4);
+      document.getElementById('tableCd').innerText = state.parsedCd.toFixed(5);
+      document.getElementById('tableClErr').innerText = (errCl >= 0 ? "+" : "") + errCl + "%";
+      document.getElementById('tableCdErr').innerText = (errCd >= 0 ? "+" : "") + errCd + "%";
 
-      document.getElementById('calcDeltaS').innerText = data.first_cell_height_mm + ' mm';
-      document.getElementById('calcDelta').innerText = data.boundary_layer_thickness_mm + ' mm';
-      document.getElementById('calcTurbModel').innerText = data.recommended_turbulence_model;
-      document.getElementById('calcRationale').innerText = data.senior_engineer_rationale;
-
-      renderDynamicSolverInstructions(selectedSolver, data.first_cell_height_mm + ' mm', flowLength);
+      if (state.caseStatus === "ANOMALY") {
+        document.getElementById('recordTitle').innerText = `Engineering Decision Record: REJECTED (${state.solver})`;
+        document.getElementById('recordTitle').style.color = "#fb7185";
+        document.getElementById('recordContainer').style.borderColor = "rgba(244, 63, 94, 0.4)";
+        document.getElementById('recordContainer').style.background = "rgba(136, 19, 55, 0.2)";
+        document.getElementById('recordSummary').innerText = `Simulation rejected in ${state.solver}. Unsteady suction vortex shedding observed. Steady RANS cannot resolve this regime; rerun in URANS/DES.`;
+        document.getElementById('recAuditStatus').innerText = "REJECTED";
+        document.getElementById('recAuditStatus').style.color = "#fb7185";
+        document.getElementById('verdictCdBadge').innerText = "SUSPECT";
+        document.getElementById('verdictCdBadge').style.color = "#fb7185";
+      } else {
+        document.getElementById('recordTitle').innerText = `Engineering Decision Record: VALIDATED FOR DESIGN USE`;
+        document.getElementById('recordTitle').style.color = "#34d399";
+        document.getElementById('recordContainer').style.borderColor = "rgba(16, 185, 129, 0.4)";
+        document.getElementById('recordContainer').style.background = "rgba(6, 78, 59, 0.15)";
+        document.getElementById('recordSummary').innerText = `Valid steady-state aerodynamic solution in ${state.solver}. Viscous sublayer resolved (y+ <= 1.0), force monitors stable, and matches wind tunnel benchmark within 5% error tolerance.`;
+        document.getElementById('recAuditStatus').innerText = "APPROVED";
+        document.getElementById('recAuditStatus').style.color = "#34d399";
+        document.getElementById('verdictCdBadge').innerText = "PASS (<5%)";
+        document.getElementById('verdictCdBadge').style.color = "#34d399";
+      }
     }
 
     function parseSTLSync(text) {
@@ -702,14 +700,12 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
 
     async function handleLaunch() {
       try {
-        selectedSolver = document.getElementById('mSoftware').value;
+        state.solver = document.getElementById('mSoftware').value;
         const v = parseFloat(document.getElementById('mVelocity').value) || 40;
         let flowLength = parseFloat(document.getElementById('mChord').value) || 1.8;
 
         if (currentCADFile) {
-          const cadPill = document.getElementById('displayCAD');
-          if (cadPill) cadPill.innerText = currentCADFile.name;
-
+          state.cadName = currentCADFile.name;
           try {
             const fileText = await currentCADFile.text();
             const geo = parseSTLSync(fileText);
@@ -722,18 +718,11 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
             console.warn("Using default geometry dimensions:", fileErr);
           }
         } else {
-          const cadPill = document.getElementById('displayCAD');
-          if (cadPill) cadPill.innerText = "NACA 0012 Default";
+          state.cadName = "NACA 0012 Default";
         }
 
-        const softPill = document.getElementById('displaySoftware');
-        if (softPill) softPill.innerText = selectedSolver;
-
-        const casePill = document.getElementById('caseStatusPill');
-        if (casePill) casePill.style.display = 'block';
-
-        const physics = calculateLocal(v, flowLength);
-        applyPhysics(physics, flowLength);
+        calculatePhysics(v, flowLength);
+        renderActiveWorkspace();
 
       } catch (err) {
         console.error("Launch setup exception:", err);
@@ -744,6 +733,10 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
     }
 
     window.onload = function() {
+      // Initialize default OpenFOAM workspace immediately on load
+      calculatePhysics(40, 1.8);
+      renderActiveWorkspace();
+
       document.getElementById('btnOpenModal').onclick = () => { document.getElementById('intakeModal').style.display = 'flex'; };
       document.getElementById('btnCancelModal').onclick = () => { document.getElementById('intakeModal').style.display = 'none'; };
       document.getElementById('btnSubmitModal').onclick = handleLaunch;
@@ -788,19 +781,19 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
           let finalCont = "6.2e-6";
           let dragStd = "0.000032";
           let flagText = "PASSED: True Asymptotic Convergence";
-          let reviewText = `Numerical residuals dropped monotonically below 1e-5 in ${selectedSolver}. Rolling standard deviation of aerodynamic drag shows zero drift across the final 50 iterations. Solution meets ASME criteria for steady-state convergence.`;
+          let reviewText = `Numerical residuals dropped monotonically below 1e-5 in ${state.solver}. Rolling standard deviation of aerodynamic drag shows zero drift across the final 50 iterations. Solution meets ASME criteria for steady-state convergence.`;
           
-          parsedCd = 0.00850;
-          parsedCl = 0.4480;
-          lastCaseStatus = "PASSED";
+          state.parsedCd = 0.00850;
+          state.parsedCl = 0.4480;
+          state.caseStatus = "PASSED";
 
           if (file.name.toLowerCase().includes("stall") || file.name.toLowerCase().includes("unsteady")) {
             dragStd = "0.002410";
-            parsedCd = 0.02470;
-            parsedCl = 1.0690;
-            lastCaseStatus = "ANOMALY";
+            state.parsedCd = 0.02470;
+            state.parsedCl = 1.0690;
+            state.caseStatus = "ANOMALY";
             flagText = "ANOMALY: Residual Convergence with Force Oscillation";
-            reviewText = `Residuals satisfied numerical criteria (< 1e-5) in ${selectedSolver}, but surface drag monitors show periodic sinusoidal oscillation. This signifies physical vortex shedding over the suction surface. Steady RANS is invalid; transition case to Transient (${selectedSolver === 'OpenFOAM' ? 'pimpleFoam' : 'URANS'}).`;
+            reviewText = `Residuals satisfied numerical criteria (< 1e-5) in ${state.solver}, but surface drag monitors show periodic sinusoidal oscillation. This signifies physical vortex shedding over the suction surface. Steady RANS is invalid; transition case to Transient (${state.solver === 'OpenFOAM' ? 'pimpleFoam' : 'URANS'}).`;
             document.getElementById('diagStatusBadge').style.borderColor = "rgba(244, 63, 94, 0.4)";
             document.getElementById('diagStatusBadge').style.color = "#fb7185";
             document.getElementById('diagFlag').style.color = "#fb7185";
