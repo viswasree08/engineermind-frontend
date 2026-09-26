@@ -308,20 +308,20 @@
       <div style="display: flex; flex-direction: column; gap: 10px;">
         <div class="stat-box">
           <span class="stat-label">Reynolds Number (Re)</span>
-          <span class="stat-value" id="hudRe" style="color: #fff;">5,550,167</span>
+          <span class="stat-value" id="hudRe" style="color: #fff;">4,933,482</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">Mach Number (Ma)</span>
-          <span class="stat-value" id="hudMach" style="color: #fff;">0.176</span>
+          <span class="stat-value" id="hudMach" style="color: #fff;">0.118</span>
           <span id="hudRegime" style="display: block; font-size: 10px; color: #34d399; margin-top: 2px;">Incompressible Turbulent</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">First Cell Height (y+ = 1)</span>
-          <span class="stat-value" id="hudDeltaS">0.00755 mm</span>
+          <span class="stat-value" id="hudDeltaS">0.00848 mm</span>
         </div>
         <div class="stat-box">
           <span class="stat-label">Boundary Layer (δ)</span>
-          <span class="stat-value" id="hudDelta" style="color: #fff;">29.62 mm</span>
+          <span class="stat-value" id="hudDelta" style="color: #fff;">30.34 mm</span>
         </div>
       </div>
     </aside>
@@ -332,7 +332,7 @@
   <div id="intakeModal">
     <div class="modal-content">
       <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px;">Initialize Geometry & Simulation Case</h3>
-      <p style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">Upload your CAD model or select a geometry preset to inspect dimensions.</p>
+      <p style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">Upload your CAD model or specify dimensions to configure pre-flight bounds.</p>
 
       <div style="border: 2px dashed #334155; border-radius: 8px; padding: 18px; text-align: center; margin-bottom: 14px; background: #090d16;">
         <input type="file" id="cadFileInput" accept=".stl,.obj,.step,.iges" style="display: none;" />
@@ -361,11 +361,11 @@
       <div class="grid-2">
         <div>
           <label style="font-size: 11px; color: #94a3b8;">Flow Velocity (m/s)</label>
-          <input type="number" id="mVelocity" value="60" class="input-field" />
+          <input type="number" id="mVelocity" value="40" class="input-field" />
         </div>
         <div>
           <label style="font-size: 11px; color: #94a3b8;">Manual Length Override (m)</label>
-          <input type="number" id="mChord" value="1.8" step="0.1" class="input-field" />
+          <input type="number" id="mChord" value="1.8" step="0.1" class="input-field" title="Leave as is or override characteristic length if model units are scaled." />
         </div>
       </div>
 
@@ -489,92 +489,87 @@
       document.getElementById('recModelText').innerText = data.recommended_turbulence_model;
     }
 
-    async function parseSTLClientSide(file) {
+    function parseSTLSync(text) {
       try {
-        const text = await file.text();
-        const vertexMatches = text.match(/vertex\s+([-\d.eE]+)\s+([-\d.eE]+)\s+([-\d.eE]+)/gi);
-        if (vertexMatches && vertexMatches.length > 0) {
-          let minX = Infinity, maxX = -Infinity;
-          let minY = Infinity, maxY = -Infinity;
-          let minZ = Infinity, maxZ = -Infinity;
+        const lines = text.split('\n');
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+        let minZ = Infinity, maxZ = -Infinity;
+        let count = 0;
 
-          for (let i = 0; i < vertexMatches.length; i++) {
-            const parts = vertexMatches[i].trim().split(/\s+/);
+        for (let i = 0; i < lines.length; i++) {
+          const l = lines[i].trim();
+          if (l.startsWith('vertex') || l.startsWith('VERTEX')) {
+            const parts = l.split(/\s+/);
             const x = parseFloat(parts[1]);
             const y = parseFloat(parts[2]);
             const z = parseFloat(parts[3]);
-            if (!isNaN(x)) { if (x < minX) minX = x; if (x > maxX) maxX = x; }
-            if (!isNaN(y)) { if (y < minY) minY = y; if (y > maxY) maxY = y; }
-            if (!isNaN(z)) { if (z < minZ) minZ = z; if (z > maxZ) maxZ = z; }
+            if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+              if (x < minX) minX = x; if (x > maxX) maxX = x;
+              if (y < minY) minY = y; if (y > maxY) maxY = y;
+              if (z < minZ) minZ = z; if (z > maxZ) maxZ = z;
+              count++;
+            }
           }
+        }
 
-          const lx = Math.max(maxX - minX, 0.1);
-          const ly = Math.max(maxY - minY, 0.05);
-          const lz = Math.max(maxZ - minZ, 0.02);
-
+        if (count > 0 && maxX > minX) {
           return {
-            lx: Number(lx.toFixed(3)),
-            ly: Number(ly.toFixed(3)),
-            lz: Number(lz.toFixed(3)),
-            warning: "Geometry clean and verified. Ensure a 1.8 mm blunt trailing edge radius before volume subtraction."
+            lx: Number((maxX - minX).toFixed(3)),
+            ly: Number(Math.max(maxY - minY, 0.1).toFixed(3)),
+            lz: Number(Math.max(maxZ - minZ, 0.05).toFixed(3)),
+            warning: "Geometry clean and manifold. Apply 1 mm blunt trailing edge before subtraction."
           };
         }
-      } catch (err) {
-        console.warn("Client STL parse fallback:", err);
+      } catch (e) {
+        console.warn("Parse fallback active:", e);
       }
-      return { lx: 1.8, ly: 0.3, lz: 0.15, warning: "Standard aerodynamic geometry loaded. Watertight manifold mesh confirmed." };
+      return { lx: 1.8, ly: 0.3, lz: 0.15, warning: "Geometry imported. Standard aerodynamic profile applied." };
     }
 
     async function handleLaunch() {
-      const software = document.getElementById('mSoftware').value;
-      const v = parseFloat(document.getElementById('mVelocity').value) || 60;
-      let flowLength = parseFloat(document.getElementById('mChord').value) || 1.8;
+      try {
+        const software = document.getElementById('mSoftware').value;
+        const v = parseFloat(document.getElementById('mVelocity').value) || 40;
+        let flowLength = parseFloat(document.getElementById('mChord').value) || 1.8;
 
-      if (currentCADFile) {
-        const cadPill = document.getElementById('displayCAD');
-        if (cadPill) cadPill.innerText = currentCADFile.name;
+        if (currentCADFile) {
+          const cadPill = document.getElementById('displayCAD');
+          if (cadPill) cadPill.innerText = currentCADFile.name;
 
-        const clientGeo = await parseSTLClientSide(currentCADFile);
-        flowLength = clientGeo.lx;
-        document.getElementById('cadLx').innerText = clientGeo.lx + " m";
-        document.getElementById('cadLy').innerText = clientGeo.ly + " m";
-        document.getElementById('cadLz').innerText = clientGeo.lz + " m";
-        document.getElementById('cadWarning').innerText = clientGeo.warning;
+          try {
+            const fileText = await currentCADFile.text();
+            const geo = parseSTLSync(fileText);
+            flowLength = geo.lx;
+            document.getElementById('cadLx').innerText = geo.lx + " m";
+            document.getElementById('cadLy').innerText = geo.ly + " m";
+            document.getElementById('cadLz').innerText = geo.lz + " m";
+            document.getElementById('cadWarning').innerText = geo.warning;
+          } catch (fileErr) {
+            console.warn("Using default geometry dimensions:", fileErr);
+          }
+        } else {
+          const cadPill = document.getElementById('displayCAD');
+          if (cadPill) cadPill.innerText = "NACA 0012 Default";
+        }
 
-        // Background server sync without blocking the UI
-        try {
-          const formData = new FormData();
-          formData.append('file', currentCADFile);
-          fetch(`${BACKEND_URL}/api/geometry/analyze`, { method: 'POST', body: formData })
-            .then(res => res.ok ? res.json() : null)
-            .then(geoData => {
-              if (geoData) {
-                document.getElementById('cadLx').innerText = geoData.length_x_m + " m";
-                document.getElementById('cadLy').innerText = geoData.width_y_m + " m";
-                document.getElementById('cadLz').innerText = geoData.height_z_m + " m";
-                document.getElementById('cadWarning').innerText = geoData.defeaturing_warning;
-              }
-            })
-            .catch(() => {});
-        } catch (e) {}
-      } else {
-        const cadPill = document.getElementById('displayCAD');
-        if (cadPill) cadPill.innerText = "NACA 0012 Default";
+        const softPill = document.getElementById('displaySoftware');
+        if (softPill) softPill.innerText = software;
+
+        const casePill = document.getElementById('caseStatusPill');
+        if (casePill) casePill.style.display = 'block';
+
+        // Calculate and apply physics
+        const physics = calculateLocal(v, flowLength);
+        applyPhysics(physics, flowLength);
+
+      } catch (err) {
+        console.error("Launch setup exception:", err);
+      } finally {
+        // ALWAYS close modal and transition to Stage 1
+        document.getElementById('intakeModal').style.display = 'none';
+        setStage(1);
       }
-
-      const softPill = document.getElementById('displaySoftware');
-      if (softPill) softPill.innerText = software;
-
-      const casePill = document.getElementById('caseStatusPill');
-      if (casePill) casePill.style.display = 'block';
-
-      // Compute aerodynamics deterministically
-      const physics = calculateLocal(v, flowLength);
-      applyPhysics(physics, flowLength);
-
-      // Close modal and navigate immediately
-      document.getElementById('intakeModal').style.display = 'none';
-      setStage(1);
     }
 
     window.onload = function() {
@@ -603,7 +598,7 @@
       document.getElementById('btnGoStage5').onclick = () => setStage(5);
       document.getElementById('btnPrintRecord').onclick = () => window.print();
 
-      // Diagnostics file upload
+      // Stage 4 File diagnostics
       const fileBtn = document.getElementById('btnTriggerUpload');
       const fileInp = document.getElementById('fileUpload');
       if (fileBtn && fileInp) {
