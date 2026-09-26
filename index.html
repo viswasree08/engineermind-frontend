@@ -13,7 +13,7 @@
     .logo-container { display: flex; align-items: center; gap: 12px; }
     .logo-badge { background: #10b981; color: #022c22; font-weight: 800; border-radius: 6px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; font-size: 14px; }
     .pill { font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: rgba(16, 185, 129, 0.1); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.2); font-weight: 600; }
-    .pill-solver { font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); font-weight: 600; }
+    .pill-solver { font-size: 11px; padding: 2px 8px; border-radius: 9999px; background: rgba(56, 189, 248, 0.15); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); font-weight: 600; }
     
     .btn-primary { background: #10b981; color: #022c22; font-weight: 600; font-size: 12px; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; transition: background 0.2s; }
     .btn-primary:hover { background: #34d399; }
@@ -22,7 +22,7 @@
 
     .workspace { display: flex; flex: 1; overflow: hidden; }
     aside.sidebar { width: 260px; background: #0b1120; border-right: 1px solid #1e293b; padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; }
-    section.canvas { flex: 1; padding: 28px; overflow-y: auto; max-width: 860px; }
+    section.canvas { flex: 1; padding: 28px; overflow-y: auto; max-width: 880px; }
     aside.hud { width: 300px; background: #0b1120; border-left: 1px solid #1e293b; padding: 20px 16px; }
 
     .stage-nav { width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; background: transparent; color: #94a3b8; border: 1px solid transparent; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
@@ -39,7 +39,10 @@
     .stat-label { font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px; }
     .stat-value { font-size: 15px; font-weight: 700; color: #6ee7b7; }
 
-    .code-box { background: #090d16; border: 1px solid #334155; border-radius: 6px; padding: 10px; font-family: ui-monospace, monospace; font-size: 11px; color: #38bdf8; overflow-x: auto; line-height: 1.5; white-space: pre-wrap; }
+    .code-box { background: #090d16; border: 1px solid #334155; border-radius: 6px; padding: 12px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; color: #38bdf8; overflow-x: auto; line-height: 1.6; white-space: pre-wrap; margin-top: 6px; margin-bottom: 10px; }
+    .step-item { background: #090d16; border: 1px solid #1e293b; border-radius: 6px; padding: 12px; margin-bottom: 10px; }
+    .step-header { display: flex; align-items: center; justify-content: space-between; font-weight: 600; font-size: 12px; color: #f8fafc; margin-bottom: 6px; }
+    .step-badge { background: #1e293b; color: #94a3b8; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
 
     #intakeModal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 100; }
     .modal-content { background: #0f172a; border: 1px solid #334155; border-radius: 12px; width: 100%; max-width: 480px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
@@ -75,7 +78,7 @@
     </div>
     <div style="display: flex; gap: 12px; align-items: center;">
       <div id="caseStatusPill" style="display: none; font-size: 12px; padding: 4px 10px; background: #1e293b; border-radius: 4px; border: 1px solid #334155;">
-        CAD: <span id="displayCAD" style="color: #fff; font-weight: 600;">Custom</span> • Solver: <span id="displaySoftware" class="pill-solver">ANSYS Fluent</span>
+        CAD: <span id="displayCAD" style="color: #fff; font-weight: 600;">Custom</span> • Solver: <span id="displaySoftware" class="pill-solver">OpenFOAM</span>
       </div>
       <button id="btnOpenModal" class="btn-primary">+ New Geometry Project</button>
     </div>
@@ -87,9 +90,9 @@
     <!-- NAVIGATION SIDEBAR -->
     <aside class="sidebar">
       <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Workflow Stages</div>
-      <button class="stage-nav active" id="nav-1"><span>1. CAD & Domain Prep</span><span class="status" id="badge-1">Active</span></button>
-      <button class="stage-nav" id="nav-2"><span>2. Meshing & y+ Sizing</span><span class="status" id="badge-2">Pending</span></button>
-      <button class="stage-nav" id="nav-3"><span>3. Solver & Physics</span><span class="status" id="badge-3">Pending</span></button>
+      <button class="stage-nav active" id="nav-1"><span id="navText-1">1. CAD & Domain Prep</span><span class="status" id="badge-1">Active</span></button>
+      <button class="stage-nav" id="nav-2"><span id="navText-2">2. Meshing & y+ Sizing</span><span class="status" id="badge-2">Pending</span></button>
+      <button class="stage-nav" id="nav-3"><span id="navText-3">3. Solver & Physics</span><span class="status" id="badge-3">Pending</span></button>
       <button class="stage-nav" id="nav-4"><span>4. Output Diagnostics</span><span class="status" id="badge-4">Pending</span></button>
       <button class="stage-nav" id="nav-5"><span>5. Validation & Record</span><span class="status" id="badge-5">Pending</span></button>
     </aside>
@@ -100,8 +103,8 @@
       <!-- STAGE 1: GEOMETRY & DOMAIN -->
       <div id="stage-1" class="stage-view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h2 style="font-size: 18px; font-weight: 700;">Stage 1: Geometry Review & Computational Domain Sizing</h2>
-          <span id="badgeStage1Solver" class="pill-solver">ANSYS Fluent Setup</span>
+          <h2 id="stage1Heading" style="font-size: 18px; font-weight: 700;">Stage 1: Geometry Review & Computational Domain Sizing</h2>
+          <span id="badgeStage1Solver" class="pill-solver">OpenFOAM Setup</span>
         </div>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Inspect uploaded CAD dimensions and establish boundary limits to prevent boundary blockage errors.</p>
 
@@ -115,19 +118,16 @@
         </div>
 
         <div class="card">
-          <div class="card-title" id="domainTitle">Virtual Wind Tunnel Domain (Derived from Lx)</div>
-          <div class="grid-3" style="margin-bottom: 12px;">
+          <div class="card-title">Virtual Wind Tunnel Domain (Derived from Lx)</div>
+          <div class="grid-3" style="margin-bottom: 14px;">
             <div class="stat-box"><span class="stat-label">Inlet Upstream (15 * Lx)</span><span class="stat-value" id="calcInlet">27.00 m</span></div>
             <div class="stat-box"><span class="stat-label">Outlet Wake (25 * Lx)</span><span class="stat-value" id="calcOutlet">45.00 m</span></div>
             <div class="stat-box"><span class="stat-label">Farfield Height (15 * Lx)</span><span class="stat-value" id="calcLateral">27.00 m</span></div>
           </div>
 
-          <!-- Dynamic Solver Instructions -->
-          <div id="domainSolverInstructions">
-            <div style="font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">ANSYS Fluent Boundary Tagging:</div>
-            <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
-              In ANSYS SpaceClaim/DesignModeler, create an enclosure using the dimensions above. Name surface patches: <code class="mono" style="color:#34d399;">inlet</code> (velocity-inlet), <code class="mono" style="color:#34d399;">outlet</code> (pressure-outlet), <code class="mono" style="color:#34d399;">wing</code> (wall, no-slip), and <code class="mono" style="color:#34d399;">top_bottom</code> (symmetry).
-            </p>
+          <!-- Dynamic Solver Step-by-Step Instructions -->
+          <div id="stage1SolverSteps">
+            <!-- Injected via JavaScript based on software -->
           </div>
         </div>
 
@@ -144,32 +144,30 @@
       <!-- STAGE 2: MESHING & BOUNDARY LAYER -->
       <div id="stage-2" class="stage-view" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h2 style="font-size: 18px; font-weight: 700;">Stage 2: Meshing Strategy & Viscous Sublayer Resolution</h2>
-          <span id="badgeStage2Solver" class="pill-solver">ANSYS Fluent Setup</span>
+          <h2 id="stage2Heading" style="font-size: 18px; font-weight: 700;">Stage 2: Meshing Strategy & Viscous Sublayer Resolution</h2>
+          <span id="badgeStage2Solver" class="pill-solver">OpenFOAM Setup</span>
         </div>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Calculate boundary layer height ensuring y+ &le; 1.0 for low-Re SST turbulence models.</p>
 
         <div class="card">
           <div class="card-title">Analytical Boundary Layer Resolution</div>
           <div class="grid-3" style="margin-bottom: 14px;">
-            <div class="stat-box"><span class="stat-label">First Cell Height (Δs)</span><span class="stat-value" id="calcDeltaS">0.00755 mm</span></div>
-            <div class="stat-box"><span class="stat-label">Boundary Layer (δ)</span><span class="stat-value" id="calcDelta">29.62 mm</span></div>
-            <div class="stat-box"><span class="stat-label">Prism Layers / Growth</span><span class="stat-value" style="color:#fff;">25–30 (r=1.15)</span></div>
+            <div class="stat-box"><span class="stat-label">First Cell Height (Δs)</span><span class="stat-value" id="calcDeltaS">0.00848 mm</span></div>
+            <div class="stat-box"><span class="stat-label">Boundary Layer (δ)</span><span class="stat-value" id="calcDelta">30.34 mm</span></div>
+            <div class="stat-box"><span class="stat-label">Prism Layers / Growth</span><span class="stat-value" style="color:#fff;">28 layers (r=1.15)</span></div>
           </div>
 
-          <div id="meshingSolverInstructions">
-            <div style="font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">ANSYS Meshing Inflation Directive:</div>
-            <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
-              In ANSYS Meshing: Apply an <strong>Inflation</strong> control on the wing boundary. Set <em>Inflation Option</em> to <strong>First Layer Height</strong> = <span id="ansysDeltaS" class="mono" style="color:#34d399;">0.00755 mm</span>, <em>Maximum Layers</em> = <strong>28</strong>, and <em>Growth Rate</em> = <strong>1.15</strong>.
-            </p>
+          <!-- Dynamic Meshing Steps -->
+          <div id="stage2SolverSteps">
+            <!-- Injected via JavaScript based on software -->
           </div>
         </div>
 
         <div class="card" style="font-size: 12px;">
-          <div style="font-weight: 700; margin-bottom: 6px; color: #fff;">Grid Convergence Index (GCI) Roadmap</div>
-          <p style="color: #cbd5e1; margin-bottom: 8px;">To satisfy ASME V&V 20 spatial convergence standards, generate three meshes:</p>
+          <div style="font-weight: 700; margin-bottom: 6px; color: #fff;">Grid Convergence Index (GCI) Roadmap (ASME V&V 20)</div>
+          <p style="color: #cbd5e1; margin-bottom: 8px;">To demonstrate spatial discretization independence, prepare three computational grids:</p>
           <ul style="padding-left: 20px; color: #94a3b8; font-family: monospace; line-height: 1.6;">
-            <li>Coarse Grid: ~50,000 cells (initial stability check)</li>
+            <li>Coarse Grid: ~50,000 cells (fast initial stability check)</li>
             <li>Medium Grid: ~100,000 cells (boundary layer velocity resolution)</li>
             <li>Fine Grid: ~200,000 cells (spatial asymptotic convergence check)</li>
           </ul>
@@ -181,8 +179,8 @@
       <!-- STAGE 3: SOLVER SETUP -->
       <div id="stage-3" class="stage-view" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h2 style="font-size: 18px; font-weight: 700;">Stage 3: Solver Configuration & Numerical Schemes</h2>
-          <span id="badgeStage3Solver" class="pill-solver">ANSYS Fluent Setup</span>
+          <h2 id="stage3Heading" style="font-size: 18px; font-weight: 700;">Stage 3: Solver Configuration & Numerical Schemes</h2>
+          <span id="badgeStage3Solver" class="pill-solver">OpenFOAM Setup</span>
         </div>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Prescribe governing equations and schemes based on flow regime and Reynolds number.</p>
 
@@ -194,10 +192,10 @@
           </p>
         </div>
 
-        <div class="card" style="font-size: 12px; line-height: 1.6;">
-          <div style="font-weight: 700; color: #fff; margin-bottom: 6px;">Numerical Schemes & Solver Controls:</div>
-          <div id="solverSchemesContent">
-            <!-- Dynamic ANSYS vs OpenFOAM setup injected here -->
+        <div class="card">
+          <div class="card-title">Step-by-Step Solver Configuration Protocol</div>
+          <div id="stage3SolverSteps">
+            <!-- Injected via JavaScript based on software -->
           </div>
         </div>
 
@@ -208,12 +206,12 @@
       <div id="stage-4" class="stage-view" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <h2 style="font-size: 18px; font-weight: 700;">Stage 4: Residuals & Force History Diagnostics</h2>
-          <span id="badgeStage4Solver" class="pill-solver">ANSYS Fluent Audit</span>
+          <span id="badgeStage4Solver" class="pill-solver">OpenFOAM Audit</span>
         </div>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Audit convergence deterministically. Separate numerical decay from physical unsteadiness.</p>
 
         <div class="card" style="border: 2px dashed #334155; text-align: center; padding: 28px;">
-          <p id="uploadLabelText" style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Upload Solver Run Artifacts (CSV force history, Fluent console log, or OpenFOAM logs)</p>
+          <p id="uploadLabelText" style="font-size: 12px; color: #94a3b8; margin-bottom: 12px;">Upload OpenFOAM log file (log.simpleFoam) or postProcessing force file (force.dat)</p>
           <input type="file" id="fileUpload" accept=".csv,.log,.txt,.dat" style="display: none;" />
           <button id="btnTriggerUpload" class="btn-secondary">Select Output File to Audit</button>
           <span id="uploadedFileName" style="display: block; font-size: 11px; color: #34d399; margin-top: 8px; font-family: monospace;"></span>
@@ -296,7 +294,7 @@
           </p>
           <div class="grid-3 mono" style="font-size: 11px; border-top: 1px solid rgba(16, 185, 129, 0.2); padding-top: 8px;">
             <div>Signed By: <span style="color:#fff;">EngineerMind Reviewer</span></div>
-            <div>Solver / Model: <span style="color:#38bdf8;" id="recModelText">ANSYS Fluent / k-omega SST</span></div>
+            <div>Solver / Model: <span style="color:#38bdf8;" id="recModelText">OpenFOAM / k-omega SST</span></div>
             <div>Audit Status: <span style="color:#34d399;" id="recAuditStatus">APPROVED</span></div>
           </div>
         </div>
@@ -355,8 +353,8 @@
         <div>
           <label style="font-size: 11px; color: #94a3b8;">Target CAE Software</label>
           <select id="mSoftware" class="input-field">
-            <option value="ANSYS Fluent">ANSYS Fluent</option>
             <option value="OpenFOAM">OpenFOAM</option>
+            <option value="ANSYS Fluent">ANSYS Fluent</option>
             <option value="STAR-CCM+">STAR-CCM+</option>
           </select>
         </div>
@@ -384,7 +382,7 @@
     const BACKEND_URL = "https://engineermind-backend-dair.onrender.com";
 
     let currentCADFile = null;
-    let selectedSolver = "ANSYS Fluent";
+    let selectedSolver = "OpenFOAM";
     let parsedCd = 0.00850;
     let parsedCl = 0.4480;
     let lastCaseStatus = "PASSED";
@@ -431,7 +429,7 @@
         document.getElementById('recordTitle').style.color = "#fb7185";
         document.getElementById('recordContainer').style.borderColor = "rgba(244, 63, 94, 0.4)";
         document.getElementById('recordContainer').style.background = "rgba(136, 19, 55, 0.2)";
-        document.getElementById('recordSummary').innerText = "Simulation rejected. Unsteady suction vortex shedding observed. Steady RANS cannot resolve this regime; rerun in URANS/DES.";
+        document.getElementById('recordSummary').innerText = `Simulation rejected in ${selectedSolver}. Unsteady suction vortex shedding observed. Steady RANS cannot resolve this regime; rerun in URANS/DES.`;
         document.getElementById('recAuditStatus').innerText = "REJECTED";
         document.getElementById('recAuditStatus').style.color = "#fb7185";
         document.getElementById('verdictCdBadge').innerText = "SUSPECT";
@@ -475,75 +473,129 @@
       };
     }
 
-    function renderSolverSpecificGuidance(solver, deltaS, flowLength) {
+    function renderDynamicSolverInstructions(solver, deltaS, flowLength) {
       // Badges
-      const solverLabel = `${solver} Setup`;
+      const solverLabel = `${solver} Protocol`;
       document.getElementById('badgeStage1Solver').innerText = solverLabel;
       document.getElementById('badgeStage2Solver').innerText = solverLabel;
       document.getElementById('badgeStage3Solver').innerText = solverLabel;
       document.getElementById('badgeStage4Solver').innerText = `${solver} Audit`;
       document.getElementById('recModelText').innerText = `${solver} / k-omega SST`;
 
-      // Stage 1 Domain Guidance
-      const domainInstr = document.getElementById('domainSolverInstructions');
+      // STAGE 1 STEPS
+      const s1 = document.getElementById('stage1SolverSteps');
       if (solver === "OpenFOAM") {
-        domainInstr.innerHTML = `
-          <div style="font-size: 11px; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">OpenFOAM (blockMeshDict & snappyHexMeshDict):</div>
-          <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-bottom: 8px;">
-            In <code class="mono" style="color:#38bdf8;">system/blockMeshDict</code>, define the background domain bounds: <code class="mono" style="color:#34d399;">(-${(flowLength*15).toFixed(1)} -${(flowLength*15).toFixed(1)} 0)</code> to <code class="mono" style="color:#34d399;">(${(flowLength*25).toFixed(1)} ${(flowLength*15).toFixed(1)} 0.1)</code>.
-          </p>
-          <div class="code-box">boundary
+        s1.innerHTML = `
+          <div class="step-item">
+            <div class="step-header"><span>Step 1.1: Case Directory Initialization</span><span class="step-badge">Terminal</span></div>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Create the standard OpenFOAM case hierarchy on your machine:</p>
+            <div class="code-box">mkdir -p openfoam_case/{0,constant,system}
+cd openfoam_case</div>
+          </div>
+          <div class="step-item">
+            <div class="step-header"><span>Step 1.2: Background Mesh Generation (system/blockMeshDict)</span><span class="step-badge">Dictionary</span></div>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Configure domain bounds (-${(flowLength*15).toFixed(1)}m upstream, +${(flowLength*25).toFixed(1)}m wake) and define boundary patches:</p>
+            <div class="code-box">scale 1.0;
+vertices
 (
-    inlet   { type patch; faces (...); }
-    outlet  { type patch; faces (...); }
-    wing    { type wall;  faces (...); }
-    frontAndBack { type empty; faces (...); } // For 2D
+    (-${(flowLength*15).toFixed(1)} -${(flowLength*15).toFixed(1)} 0)
+    ( ${(flowLength*25).toFixed(1)} -${(flowLength*15).toFixed(1)} 0)
+    ( ${(flowLength*25).toFixed(1)}  ${(flowLength*15).toFixed(1)} 0)
+    (-${(flowLength*15).toFixed(1)}  ${(flowLength*15).toFixed(1)} 0)
+    (-${(flowLength*15).toFixed(1)} -${(flowLength*15).toFixed(1)} 0.1)
+    ( ${(flowLength*25).toFixed(1)} -${(flowLength*15).toFixed(1)} 0.1)
+    ( ${(flowLength*25).toFixed(1)}  ${(flowLength*15).toFixed(1)} 0.1)
+    (-${(flowLength*15).toFixed(1)}  ${(flowLength*15).toFixed(1)} 0.1)
+);
+blocks ( hex (0 1 2 3 4 5 6 7) (100 80 1) simpleGrading (1 1 1) );
+boundary
+(
+    inlet   { type patch; faces ((0 4 7 3)); }
+    outlet  { type patch; faces ((1 2 6 5)); }
+    topAndBottom { type symmetry; faces ((3 7 6 2) (0 1 5 4)); }
+    frontAndBack { type empty; faces ((0 3 2 1) (4 5 6 7)); }
 );</div>
+          </div>
+          <div class="step-item">
+            <div class="step-header"><span>Step 1.3: Execute Background BlockMesh</span><span class="step-badge">Terminal</span></div>
+            <div class="code-box">blockMesh</div>
+          </div>
         `;
       } else {
-        domainInstr.innerHTML = `
-          <div style="font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">ANSYS Fluent Boundary Tagging:</div>
-          <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
-            In SpaceClaim/DesignModeler, create an enclosure around the geometry. Name patches: <code class="mono" style="color:#34d399;">inlet</code> (velocity-inlet), <code class="mono" style="color:#34d399;">outlet</code> (pressure-outlet), <code class="mono" style="color:#34d399;">wing</code> (wall, no-slip), and <code class="mono" style="color:#34d399;">symmetry</code>.
-          </p>
+        s1.innerHTML = `
+          <div class="step-item">
+            <div class="step-header"><span>Step 1.1: CAD Import & Orientation</span><span class="step-badge">SpaceClaim / CAD</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Import your geometry. Orient chord along the X-axis (leading edge at origin) and span along the Z-axis.</p>
+          </div>
+          <div class="step-item">
+            <div class="step-header"><span>Step 1.2: Enclosure Wind Tunnel Creation</span><span class="step-badge">DesignModeler</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Create Enclosure with dimensions: Upstream: <strong>${(flowLength*15).toFixed(1)} m</strong>, Downstream Wake: <strong>${(flowLength*25).toFixed(1)} m</strong>, Top/Bottom: <strong>${(flowLength*15).toFixed(1)} m</strong>.</p>
+          </div>
+          <div class="step-item">
+            <div class="step-header"><span>Step 1.3: Assign Named Selections</span><span class="step-badge">Boundary Setup</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Tag boundaries: <code class="mono" style="color:#34d399;">velocity_inlet</code>, <code class="mono" style="color:#34d399;">pressure_outlet</code>, <code class="mono" style="color:#34d399;">wing_wall</code>, and <code class="mono" style="color:#34d399;">symmetry</code>.</p>
+          </div>
         `;
       }
 
-      // Stage 2 Meshing Guidance
-      const meshInstr = document.getElementById('meshingSolverInstructions');
+      // STAGE 2 STEPS
+      const s2 = document.getElementById('stage2SolverSteps');
       if (solver === "OpenFOAM") {
-        meshInstr.innerHTML = `
-          <div style="font-size: 11px; font-weight: 700; color: #38bdf8; margin-bottom: 4px;">OpenFOAM (snappyHexMeshDict Boundary Layers):</div>
-          <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-bottom: 8px;">
-            In <code class="mono" style="color:#38bdf8;">system/snappyHexMeshDict</code> under <code class="mono" style="color:#34d399;">addLayersControls</code>, configure resolved viscous layers:
-          </p>
-          <div class="code-box">layers
+        s2.innerHTML = `
+          <div class="step-item">
+            <div class="step-header"><span>Step 2.1: Surface Feature Extraction</span><span class="step-badge">system/surfaceFeaturesDict</span></div>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Extract sharp geometric features from your uploaded STL file:</p>
+            <div class="code-box">surfaceFeatures</div>
+          </div>
+          <div class="step-item">
+            <div class="step-header"><span>Step 2.2: Viscous Layers Setup (system/snappyHexMeshDict)</span><span class="step-badge">Dictionary</span></div>
+            <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Prescribe calculated first layer height <span class="mono" style="color:#34d399;">${deltaS}</span> to guarantee y+ &le; 1.0:</p>
+            <div class="code-box">addLayersControls
 {
-    "wing.*"
+    relativeSizes false;
+    layers
     {
-        nSurfaceLayers 28;
+        "wing.*"
+        {
+            nSurfaceLayers 28;
+        }
     }
-}
-relativeSizes false;
-firstLayerThickness ${deltaS}; // First cell height in meters
-expansionRatio 1.15;
-finalLayerThicknessRatio 1.0;</div>
+    expansionRatio 1.15;
+    firstLayerThickness ${deltaS}; // First layer in mm/m based on mesh scale
+    minThickness 1e-6;
+    nGrow 1;
+}</div>
+          </div>
+          <div class="step-item">
+            <div class="step-header"><span>Step 2.3: Execute SnappyHexMesh & Check Mesh Quality</span><span class="step-badge">Terminal</span></div>
+            <div class="code-box">snappyHexMesh -overwrite
+checkMesh</div>
+            <p style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Senior tip: Ensure Maximum Non-Orthogonality is strictly &lt; 70 and Max Skewness &lt; 4.0.</p>
+          </div>
         `;
       } else {
-        meshInstr.innerHTML = `
-          <div style="font-size: 11px; font-weight: 700; color: #94a3b8; margin-bottom: 4px;">ANSYS Meshing Inflation Directive:</div>
-          <p style="font-size: 12px; color: #cbd5e1; line-height: 1.5;">
-            In ANSYS Meshing: Apply an <strong>Inflation</strong> control on the wing boundary. Set <em>Inflation Option</em> to <strong>First Layer Height</strong> = <span class="mono" style="color:#34d399;">${deltaS}</span>, <em>Maximum Layers</em> = <strong>28</strong>, and <em>Growth Rate</em> = <strong>1.15</strong>.
-          </p>
+        s2.innerHTML = `
+          <div class="step-item">
+            <div class="step-header"><span>Step 2.1: Body Sizing & Surface Mesh</span><span class="step-badge">ANSYS Meshing</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Apply Face Sizing on the wing profile with Curvature Normal Angle set to 12° to capture leading-edge radius.</p>
+          </div>
+          <div class="step-item">
+            <div class="step-header"><span>Step 2.2: Prism Inflation Layer Formulation</span><span class="step-badge">Inflation Control</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Set <em>Inflation Option</em> to <strong>First Layer Height</strong> = <span class="mono" style="color:#34d399;">${deltaS}</span>, <em>Maximum Layers</em> = <strong>28</strong>, <em>Growth Rate</em> = <strong>1.15</strong>.</p>
+          </div>
+          <div class="step-item">
+            <div class="step-header"><span>Step 2.3: Mesh Quality Audit</span><span class="step-badge">Verification</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Verify Minimum Orthogonal Quality &gt; 0.20 and Maximum Aspect Ratio &lt; 1000 in the boundary layer.</p>
+          </div>
         `;
       }
 
-      // Stage 3 Solver Setup
-      const schemeContent = document.getElementById('solverSchemesContent');
+      // STAGE 3 STEPS
+      const s3 = document.getElementById('stage3SolverSteps');
       if (solver === "OpenFOAM") {
-        schemeContent.innerHTML = `
-          <div style="margin-bottom: 10px;">
-            <span style="color:#38bdf8; font-weight:700;">1. Turbulence: constant/momentumTransport</span>
+        s3.innerHTML = `
+          <div class="step-item">
+            <div class="step-header"><span>Step 3.1: Turbulence Model (constant/momentumTransport)</span><span class="step-badge">Dictionary</span></div>
             <div class="code-box">simulationType RAS;
 RAS
 {
@@ -552,8 +604,9 @@ RAS
     printCoeffs     on;
 }</div>
           </div>
-          <div style="margin-bottom: 10px;">
-            <span style="color:#38bdf8; font-weight:700;">2. Discretization: system/fvSchemes</span>
+          <div class="step-item">
+            <div class="step-header"><span>Step 3.2: Spatial Discretization (system/fvSchemes)</span><span class="step-badge">Dictionary</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Use Second-Order Upwind to eliminate false artificial dissipation:</p>
             <div class="code-box">divSchemes
 {
     default         none;
@@ -562,26 +615,27 @@ RAS
     div(phi,omega)  bounded Gauss upwind;
 }</div>
           </div>
-          <div>
-            <span style="color:#38bdf8; font-weight:700;">3. Solver Control: system/fvSolution</span>
-            <p style="color:#cbd5e1; margin-top:4px;">Execute steady-state solve using <code class="mono" style="color:#34d399;">simpleFoam</code>. Monitor continuity residuals with <code class="mono" style="color:#38bdf8;">foamLog</code>.</p>
+          <div class="step-item">
+            <div class="step-header"><span>Step 3.3: Solver Execution & Force Monitor (simpleFoam)</span><span class="step-badge">Terminal</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Include <code class="mono" style="color:#38bdf8;">system/controlDict</code> functionObjects for forces and launch simpleFoam:</p>
+            <div class="code-box">simpleFoam > log.simpleFoam &
+foamMonitor -l postProcessing/forces/0/force.dat</div>
           </div>
         `;
         document.getElementById('uploadLabelText').innerText = "Upload OpenFOAM log file (log.simpleFoam) or postProcessing force file (force.dat)";
       } else {
-        schemeContent.innerHTML = `
-          <div style="margin-bottom: 8px;">
-            <span style="color:#94a3b8;">Spatial Discretization:</span>
-            <span style="color:#fff; font-weight:700; display:block;">Second-Order Upwind (Momentum & Turbulent Quantities)</span>
-            <p style="color:#f87171; margin-top:4px;">Warning: First-Order Upwind introduces artificial numerical diffusion and false drag.</p>
+        s3.innerHTML = `
+          <div class="step-item">
+            <div class="step-header"><span>Step 3.1: Physics Model Activation</span><span class="step-badge">Fluent Tree</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Navigate to <strong>Models → Viscous</strong> → Select <strong>k-omega SST</strong>. Keep Low-Re Corrections active.</p>
           </div>
-          <div style="margin-bottom: 8px;">
-            <span style="color:#94a3b8;">Pressure-Velocity Coupling:</span>
-            <span style="color:#fff; font-weight:700; display:block;">Coupled Scheme (with Pseudo Transient formulation)</span>
+          <div class="step-item">
+            <div class="step-header"><span>Step 3.2: Numerical Schemes & Coupling</span><span class="step-badge">Solution Methods</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Set <em>Pressure-Velocity Coupling</em> to <strong>Coupled</strong> with <strong>Pseudo Transient</strong> formulation. Set Momentum & Turbulence to <strong>Second-Order Upwind</strong>.</p>
           </div>
-          <div>
-            <span style="color:#94a3b8;">Convergence Criteria:</span>
-            <span style="color:#34d399; font-weight:700; display:block;">Continuity & Momentum Residuals &lt; 10⁻⁵ + Force Monitor Asymptotic Stability</span>
+          <div class="step-item">
+            <div class="step-header"><span>Step 3.3: Force Coefficient Monitors</span><span class="step-badge">Solution Monitors</span></div>
+            <p style="font-size: 11px; color: #cbd5e1;">Create Surface Report Definition for <strong>Lift (Cl)</strong> and <strong>Drag (Cd)</strong> on <code class="mono" style="color:#34d399;">wing_wall</code>. Enable Report File and Report Plot.</p>
           </div>
         `;
         document.getElementById('uploadLabelText').innerText = "Upload ANSYS Fluent solver output file (fluent.log or exported forces.csv)";
@@ -605,7 +659,7 @@ RAS
       document.getElementById('calcTurbModel').innerText = data.recommended_turbulence_model;
       document.getElementById('calcRationale').innerText = data.senior_engineer_rationale;
 
-      renderSolverSpecificGuidance(selectedSolver, data.first_cell_height_mm + ' mm', flowLength);
+      renderDynamicSolverInstructions(selectedSolver, data.first_cell_height_mm + ' mm', flowLength);
     }
 
     function parseSTLSync(text) {
@@ -746,7 +800,7 @@ RAS
             parsedCl = 1.0690;
             lastCaseStatus = "ANOMALY";
             flagText = "ANOMALY: Residual Convergence with Force Oscillation";
-            reviewText = "Residuals satisfied numerical criteria (< 1e-5), but surface drag monitors show periodic sinusoidal oscillation. This signifies physical vortex shedding over the suction surface. Steady RANS is invalid; transition case to Transient (URANS / pimpleFoam).";
+            reviewText = `Residuals satisfied numerical criteria (< 1e-5) in ${selectedSolver}, but surface drag monitors show periodic sinusoidal oscillation. This signifies physical vortex shedding over the suction surface. Steady RANS is invalid; transition case to Transient (${selectedSolver === 'OpenFOAM' ? 'pimpleFoam' : 'URANS'}).`;
             document.getElementById('diagStatusBadge').style.borderColor = "rgba(244, 63, 94, 0.4)";
             document.getElementById('diagStatusBadge').style.color = "#fb7185";
             document.getElementById('diagFlag').style.color = "#fb7185";
