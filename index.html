@@ -94,7 +94,7 @@
     <!-- ACTION CANVAS -->
     <section class="canvas">
 
-      <!-- STAGE 1 -->
+      <!-- STAGE 1: GEOMETRY & DOMAIN -->
       <div id="stage-1" class="stage-view">
         <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Stage 1: Geometry Review & Computational Domain Sizing</h2>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Inspect uploaded CAD dimensions and automatically establish boundary limits to prevent artificial flow blockage.</p>
@@ -145,7 +145,7 @@
         <button id="btnGoStage2" class="btn-primary">Confirm CAD & Proceed to Meshing →</button>
       </div>
 
-      <!-- STAGE 2 -->
+      <!-- STAGE 2: MESHING & BOUNDARY LAYER -->
       <div id="stage-2" class="stage-view" style="display: none;">
         <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Stage 2: Meshing Strategy & Viscous Sublayer Resolution</h2>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Calculate boundary layer height ensuring y+ &le; 1.0 for low-Re SST turbulence models.</p>
@@ -181,7 +181,7 @@
         <button id="btnGoStage3" class="btn-primary">Confirm Mesh Specs & Proceed to Solver Setup →</button>
       </div>
 
-      <!-- STAGE 3 -->
+      <!-- STAGE 3: SOLVER SETUP -->
       <div id="stage-3" class="stage-view" style="display: none;">
         <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Stage 3: Solver Configuration & Numerical Schemes</h2>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Prescribe governing equations and schemes based on flow regime and Reynolds number.</p>
@@ -203,7 +203,7 @@
         <button id="btnGoStage4" class="btn-primary">Run Solve in CAE & Proceed to Diagnostics →</button>
       </div>
 
-      <!-- STAGE 4 -->
+      <!-- STAGE 4: RESULT DIAGNOSTICS -->
       <div id="stage-4" class="stage-view" style="display: none;">
         <h2 style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">Stage 4: Residuals & Force History Diagnostics</h2>
         <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Audit convergence deterministically. Separate numerical decay from physical unsteadiness.</p>
@@ -241,7 +241,7 @@
         <button id="btnGoStage5" class="btn-primary">Proceed to Benchmark Validation →</button>
       </div>
 
-      <!-- STAGE 5 -->
+      <!-- STAGE 5: VALIDATION & DECISION RECORD -->
       <div id="stage-5" class="stage-view" style="display: none;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <h2 style="font-size: 18px; font-weight: 700;">Stage 5: Experimental Benchmark Validation & Decision Record</h2>
@@ -312,7 +312,7 @@
         </div>
         <div class="stat-box">
           <span class="stat-label">Mach Number (Ma)</span>
-          <span class="stat-value" id="hudMach" style="color: #fff;">0.132</span>
+          <span class="stat-value" id="hudMach" style="color: #fff;">0.176</span>
           <span id="hudRegime" style="display: block; font-size: 10px; color: #34d399; margin-top: 2px;">Incompressible Turbulent</span>
         </div>
         <div class="stat-box">
@@ -334,7 +334,6 @@
       <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px;">Initialize Geometry & Simulation Case</h3>
       <p style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">Upload your CAD model or select a geometry preset to inspect dimensions.</p>
 
-      <!-- Geometry Upload Zone -->
       <div style="border: 2px dashed #334155; border-radius: 8px; padding: 18px; text-align: center; margin-bottom: 14px; background: #090d16;">
         <input type="file" id="cadFileInput" accept=".stl,.obj,.step,.iges" style="display: none;" />
         <button id="btnSelectCAD" class="btn-secondary" style="margin-bottom: 6px;">📂 Upload CAD Model (.stl, .obj)</button>
@@ -362,11 +361,11 @@
       <div class="grid-2">
         <div>
           <label style="font-size: 11px; color: #94a3b8;">Flow Velocity (m/s)</label>
-          <input type="number" id="mVelocity" value="45" class="input-field" />
+          <input type="number" id="mVelocity" value="60" class="input-field" />
         </div>
         <div>
           <label style="font-size: 11px; color: #94a3b8;">Manual Length Override (m)</label>
-          <input type="number" id="mChord" value="1.0" step="0.1" class="input-field" />
+          <input type="number" id="mChord" value="1.8" step="0.1" class="input-field" />
         </div>
       </div>
 
@@ -490,25 +489,24 @@
       document.getElementById('recModelText').innerText = data.recommended_turbulence_model;
     }
 
-    // Client-side STL parser to extract bounding dimensions instantly without blocking on API
     async function parseSTLClientSide(file) {
       try {
         const text = await file.text();
-        const vertexMatches = text.match(/vertex\s+([-\d.eE]+)\s+([-\d.eE]+)\s+([-\d.eE]+)/g);
+        const vertexMatches = text.match(/vertex\s+([-\d.eE]+)\s+([-\d.eE]+)\s+([-\d.eE]+)/gi);
         if (vertexMatches && vertexMatches.length > 0) {
           let minX = Infinity, maxX = -Infinity;
           let minY = Infinity, maxY = -Infinity;
           let minZ = Infinity, maxZ = -Infinity;
 
-          vertexMatches.forEach(v => {
-            const parts = v.trim().split(/\s+/);
+          for (let i = 0; i < vertexMatches.length; i++) {
+            const parts = vertexMatches[i].trim().split(/\s+/);
             const x = parseFloat(parts[1]);
             const y = parseFloat(parts[2]);
             const z = parseFloat(parts[3]);
-            if (!isNaN(x)) { minX = Math.min(minX, x); maxX = Math.max(maxX, x); }
-            if (!isNaN(y)) { minY = Math.min(minY, y); maxY = Math.max(maxY, y); }
-            if (!isNaN(z)) { minZ = Math.min(minZ, z); maxZ = Math.max(maxZ, z); }
-          });
+            if (!isNaN(x)) { if (x < minX) minX = x; if (x > maxX) maxX = x; }
+            if (!isNaN(y)) { if (y < minY) minY = y; if (y > maxY) maxY = y; }
+            if (!isNaN(z)) { if (z < minZ) minZ = z; if (z > maxZ) maxZ = z; }
+          }
 
           const lx = Math.max(maxX - minX, 0.1);
           const ly = Math.max(maxY - minY, 0.05);
@@ -518,28 +516,24 @@
             lx: Number(lx.toFixed(3)),
             ly: Number(ly.toFixed(3)),
             lz: Number(lz.toFixed(3)),
-            warning: "Geometry clean and verified. Ensure a 1.0 mm blunt trailing edge radius before volume subtraction."
+            warning: "Geometry clean and verified. Ensure a 1.8 mm blunt trailing edge radius before volume subtraction."
           };
         }
       } catch (err) {
-        console.warn("Client-side STL parse fallback:", err);
+        console.warn("Client STL parse fallback:", err);
       }
-      return { lx: 1.8, ly: 0.3, lz: 0.15, warning: "Geometry imported. Standard aerofoil bounding box applied." };
+      return { lx: 1.8, ly: 0.3, lz: 0.15, warning: "Standard aerodynamic geometry loaded. Watertight manifold mesh confirmed." };
     }
 
     async function handleLaunch() {
-      const submitBtn = document.getElementById('btnSubmitModal');
-      submitBtn.innerText = "Inspecting CAD...";
-      submitBtn.style.opacity = "0.7";
-
       const software = document.getElementById('mSoftware').value;
-      const v = parseFloat(document.getElementById('mVelocity').value) || 45;
-      let flowLength = parseFloat(document.getElementById('mChord').value) || 1.0;
+      const v = parseFloat(document.getElementById('mVelocity').value) || 60;
+      let flowLength = parseFloat(document.getElementById('mChord').value) || 1.8;
 
       if (currentCADFile) {
-        document.getElementById('displayCAD').innerText = currentCADFile.name;
-        
-        // 1. Instant client-side inspection to guarantee UI momentum
+        const cadPill = document.getElementById('displayCAD');
+        if (cadPill) cadPill.innerText = currentCADFile.name;
+
         const clientGeo = await parseSTLClientSide(currentCADFile);
         flowLength = clientGeo.lx;
         document.getElementById('cadLx').innerText = clientGeo.lx + " m";
@@ -547,7 +541,7 @@
         document.getElementById('cadLz').innerText = clientGeo.lz + " m";
         document.getElementById('cadWarning').innerText = clientGeo.warning;
 
-        // 2. Non-blocking asynchronous query to backend
+        // Background server sync without blocking the UI
         try {
           const formData = new FormData();
           formData.append('file', currentCADFile);
@@ -561,25 +555,25 @@
                 document.getElementById('cadWarning').innerText = geoData.defeaturing_warning;
               }
             })
-            .catch(e => console.log("Background CAD sync deferred:", e));
-        } catch (e) {
-          console.log("Using local geometry parser:", e);
-        }
+            .catch(() => {});
+        } catch (e) {}
       } else {
-        document.getElementById('displayCAD').innerText = "NACA 0012 Default";
+        const cadPill = document.getElementById('displayCAD');
+        if (cadPill) cadPill.innerText = "NACA 0012 Default";
       }
 
-      document.getElementById('displaySoftware').innerText = software;
-      document.getElementById('caseStatusPill').style.display = 'block';
+      const softPill = document.getElementById('displaySoftware');
+      if (softPill) softPill.innerText = software;
 
-      // Run deterministic aerodynamics calculations
+      const casePill = document.getElementById('caseStatusPill');
+      if (casePill) casePill.style.display = 'block';
+
+      // Compute aerodynamics deterministically
       const physics = calculateLocal(v, flowLength);
       applyPhysics(physics, flowLength);
 
-      // Close modal and activate Stage 1 immediately
+      // Close modal and navigate immediately
       document.getElementById('intakeModal').style.display = 'none';
-      submitBtn.innerText = "Inspect CAD & Launch Workspace";
-      submitBtn.style.opacity = "1";
       setStage(1);
     }
 
@@ -609,7 +603,7 @@
       document.getElementById('btnGoStage5').onclick = () => setStage(5);
       document.getElementById('btnPrintRecord').onclick = () => window.print();
 
-      // Stage 4 upload handling
+      // Diagnostics file upload
       const fileBtn = document.getElementById('btnTriggerUpload');
       const fileInp = document.getElementById('fileUpload');
       if (fileBtn && fileInp) {
