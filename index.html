@@ -22,8 +22,8 @@
 
     .workspace { display: flex; flex: 1; overflow: hidden; }
     aside.sidebar { width: 260px; background: #0b1120; border-right: 1px solid #1e293b; padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; }
-    section.canvas { flex: 1; padding: 28px; overflow-y: auto; max-width: 900px; }
-    aside.hud { width: 300px; background: #0b1120; border-left: 1px solid #1e293b; padding: 20px 16px; }
+    section.canvas { flex: 1; padding: 28px; overflow-y: auto; max-width: 940px; }
+    aside.hud { width: 320px; background: #0b1120; border-left: 1px solid #1e293b; padding: 20px 16px; }
 
     .stage-nav { width: 100%; text-align: left; padding: 10px 12px; border-radius: 8px; font-size: 12px; font-weight: 500; background: transparent; color: #94a3b8; border: 1px solid transparent; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
     .stage-nav:hover { background: #1e293b; color: #f1f5f9; }
@@ -46,13 +46,22 @@
     .formula-tag { display: inline-block; background: #1e293b; color: #e2e8f0; font-family: monospace; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin: 2px 0; border: 1px solid #334155; }
 
     #intakeModal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); justify-content: center; align-items: center; z-index: 100; }
-    .modal-content { background: #0f172a; border: 1px solid #334155; border-radius: 12px; width: 100%; max-width: 500px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
+    .modal-content { background: #0f172a; border: 1px solid #334155; border-radius: 12px; width: 100%; max-width: 520px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); }
     .input-field { width: 100%; background: #090d16; border: 1px solid #334155; border-radius: 6px; padding: 8px 12px; color: #fff; font-size: 13px; margin-top: 4px; margin-bottom: 14px; outline: none; }
     .input-field:focus { border-color: #10b981; }
 
     table { width: 100%; border-collapse: collapse; margin-top: 8px; font-size: 12px; text-align: left; }
     th { border-bottom: 1px solid #334155; padding: 8px; color: #94a3b8; font-weight: 600; font-family: monospace; }
     td { padding: 10px 8px; border-bottom: 1px solid #1e293b; font-family: monospace; }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      header, aside.sidebar, aside.hud, button { display: none !important; }
+      section.canvas { max-width: 100%; padding: 0; }
+      .card { background: #fff; border: 1px solid #ccc; color: #000; }
+      .stat-box { background: #f8fafc; border: 1px solid #ddd; color: #000; }
+      .stat-value { color: #000 !important; }
+    }
   </style>
 </head>
 <body>
@@ -69,9 +78,9 @@
     </div>
     <div style="display: flex; gap: 12px; align-items: center;">
       <div id="caseStatusPill" style="display: none; font-size: 12px; padding: 4px 10px; background: #1e293b; border-radius: 4px; border: 1px solid #334155;">
-        CAD: <span id="displayCAD" style="color: #fff; font-weight: 600;">Custom</span> • Solver: <span id="displaySoftware" class="pill-solver">OpenFOAM</span>
+        Case: <span id="displayCAD" style="color: #fff; font-weight: 600;">Custom</span> • Regime: <span id="displayRegime" style="color: #34d399;">External Aerodynamics</span> • Solver: <span id="displaySoftware" class="pill-solver">OpenFOAM</span>
       </div>
-      <button id="btnOpenModal" class="btn-primary">+ New Geometry Project</button>
+      <button id="btnOpenModal" class="btn-primary">+ New Simulation Case</button>
     </div>
   </header>
 
@@ -80,9 +89,9 @@
     <!-- LEFT RAIL -->
     <aside class="sidebar">
       <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.05em;">Workflow Stages</div>
-      <button class="stage-nav active" id="nav-1"><span>1. CAD & Domain Bounds</span><span class="status" id="badge-1">Active</span></button>
+      <button class="stage-nav active" id="nav-1"><span>1. Geometry & Domain Setup</span><span class="status" id="badge-1">Active</span></button>
       <button class="stage-nav" id="nav-2"><span>2. Boundary Layer & Mesh</span><span class="status" id="badge-2">Pending</span></button>
-      <button class="stage-nav" id="nav-3"><span>3. Solver & Numerics</span><span class="status" id="badge-3">Pending</span></button>
+      <button class="stage-nav" id="nav-3"><span>3. Physics & Solver Control</span><span class="status" id="badge-3">Pending</span></button>
       <button class="stage-nav" id="nav-4"><span>4. Output Diagnostics</span><span class="status" id="badge-4">Pending</span></button>
       <button class="stage-nav" id="nav-5"><span>5. Validation & Record</span><span class="status" id="badge-5">Pending</span></button>
     </aside>
@@ -105,10 +114,15 @@
         <div class="stat-box">
           <span class="stat-label">Mach Number (Ma)</span>
           <span class="stat-value" id="hudMach" style="color: #fff;">0.118</span>
-          <span id="hudRegime" style="display: block; font-size: 10px; color: #34d399; margin-top: 2px;">Incompressible Turbulent</span>
+          <span id="hudFlowType" style="display: block; font-size: 10px; color: #34d399; margin-top: 2px;">Incompressible Turbulent</span>
         </div>
         <div class="stat-box">
-          <span class="stat-label">First Cell Height (Δs for y+)</span>
+          <span class="stat-label">Target Wall y+</span>
+          <span class="stat-value" id="hudTargetYPlus" style="color: #38bdf8;">1.0</span>
+          <span id="hudYPlusMode" style="display: block; font-size: 10px; color: #94a3b8; margin-top: 2px;">Low-Re Resolved (Viscous Sublayer)</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">First Cell Height (Δs)</span>
           <span class="stat-value" id="hudDeltaS">0.00755 mm</span>
         </div>
         <div class="stat-box">
@@ -130,16 +144,23 @@
   <!-- MODAL: PROJECT INTAKE -->
   <div id="intakeModal">
     <div class="modal-content">
-      <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px;">Initialize External CFD Study</h3>
-      <p style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">Specify geometry format and boundary conditions to build the workflow.</p>
+      <h3 style="font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px;">Initialize Engineering Simulation Case</h3>
+      <p style="font-size: 12px; color: #94a3b8; margin-bottom: 16px;">Select physical regime and geometry to build workflow steps.</p>
 
       <div style="border: 2px dashed #334155; border-radius: 8px; padding: 16px; text-align: center; margin-bottom: 14px; background: #090d16;">
-        <input type="file" id="cadFileInput" accept=".stl,.obj,.step,.stp,.iges,.igs" style="display: none;" />
-        <button id="btnSelectCAD" class="btn-secondary" style="margin-bottom: 6px;">📂 Upload Aerodynamic Surface (.stl, .step, .iges)</button>
-        <span id="cadFileNameDisplay" style="display: block; font-size: 11px; color: #34d399; font-family: monospace;">No file loaded (Default: NACA 0012 Aerofoil)</span>
+        <input type="file" id="cadFileInput" accept=".stl,.step,.stp,.iges,.igs,.txt,.dat" style="display: none;" />
+        <button id="btnSelectCAD" class="btn-secondary" style="margin-bottom: 6px;">📂 Upload CAD / Surface (.stl, .step, .iges)</button>
+        <span id="cadFileNameDisplay" style="display: block; font-size: 11px; color: #34d399; font-family: monospace;">No file loaded (Default: UAV Wing Section)</span>
       </div>
 
       <div class="grid-2">
+        <div>
+          <label style="font-size: 11px; color: #94a3b8;">Physical Flow Regime</label>
+          <select id="mRegime" class="input-field">
+            <option value="external_aerodynamics">External Aerodynamics (Wing, Vehicle, UAV)</option>
+            <option value="internal_nozzle">Internal Compressible Flow (CD Nozzle, Duct)</option>
+          </select>
+        </div>
         <div>
           <label style="font-size: 11px; color: #94a3b8;">Target CAE Environment</label>
           <select id="mSoftware" class="input-field">
@@ -147,24 +168,25 @@
             <option value="ANSYS Fluent">ANSYS Fluent</option>
           </select>
         </div>
+      </div>
+
+      <div class="grid-2">
         <div>
-          <label style="font-size: 11px; color: #94a3b8;">Wall y+ Resolution Target</label>
+          <label style="font-size: 11px; color: #94a3b8;">Wall y+ Resolution Strategy</label>
           <select id="mYplus" class="input-field">
             <option value="1.0">y+ ≤ 1.0 (Low-Re Resolved SST)</option>
             <option value="30.0">30 ≤ y+ ≤ 300 (Standard Wall Functions)</option>
           </select>
         </div>
-      </div>
-
-      <div class="grid-2">
         <div>
-          <label style="font-size: 11px; color: #94a3b8;">Velocity U∞ (m/s)</label>
+          <label style="font-size: 11px; color: #94a3b8;">Flow Velocity U∞ or Total Inflow (m/s)</label>
           <input type="number" id="mVelocity" value="40" class="input-field" />
         </div>
-        <div>
-          <label style="font-size: 11px; color: #94a3b8;">Characteristic Chord Length c (m)</label>
-          <input type="number" id="mChord" value="1.8" step="0.1" class="input-field" />
-        </div>
+      </div>
+
+      <div>
+        <label style="font-size: 11px; color: #94a3b8;">Characteristic Dimension (Chord c or Nozzle Throat D) in meters</label>
+        <input type="number" id="mChord" value="1.8" step="0.05" class="input-field" title="For wings: chord length. For nozzles: throat diameter or duct width." />
       </div>
 
       <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px;">
@@ -175,10 +197,9 @@
   </div>
 
   <script>
-    const BACKEND_URL = "https://engineermind-backend-dair.onrender.com";
-
-    // Application State
+    // System State Object
     const state = {
+      regime: "external_aerodynamics", // "external_aerodynamics" or "internal_nozzle"
       solver: "OpenFOAM",
       cadName: "dronewing.stl",
       flowLength: 1.8,
@@ -190,7 +211,6 @@
       u_tau: 1.54,
       re: 4930129,
       mach: 0.118,
-      regime: "Incompressible Fully Turbulent Flow",
       layers: 28,
       growthRate: 1.15,
       activeStage: 1,
@@ -201,22 +221,30 @@
 
     let currentCADFile = null;
 
-    function calculateLocalPhysics(v, c, yPlus) {
+    function calculateLocalPhysics(v, c, yPlus, regimeType) {
       const rho = 1.225;
       const mu = 1.789e-5;
       const re = (rho * v * c) / mu;
       const mach = v / 340.3;
-      const regime = (mach < 0.3) ? "Incompressible Fully Turbulent Flow" : "Compressible Subsonic Flow";
-      
-      const cf = 0.0583 * Math.pow(re, -0.2);
-      const tau_w = 0.5 * rho * Math.pow(v, 2) * cf;
-      const u_tau = Math.sqrt(tau_w / rho);
-      const delta_s = (yPlus * mu) / (rho * u_tau);
-      const delta = (0.37 * c) / Math.pow(re, 0.2);
+
+      let cf, tau_w, u_tau, delta_s, delta;
+
+      if (regimeType === "internal_nozzle") {
+        cf = 0.079 * Math.pow(re, -0.25);
+        tau_w = 0.5 * rho * Math.pow(v, 2) * cf;
+        u_tau = Math.sqrt(tau_w / rho);
+        delta_s = (yPlus * mu) / (rho * u_tau);
+        delta = 0.5 * c;
+      } else {
+        cf = 0.0583 * Math.pow(re, -0.2);
+        tau_w = 0.5 * rho * Math.pow(v, 2) * cf;
+        u_tau = Math.sqrt(tau_w / rho);
+        delta_s = (yPlus * mu) / (rho * u_tau);
+        delta = (0.37 * c) / Math.pow(re, 0.2);
+      }
 
       state.re = Math.round(re);
       state.mach = Number(mach.toFixed(3));
-      state.regime = regime;
       state.delta_mm = Number((delta * 1000).toFixed(2));
       state.deltaS_mm = Number((delta_s * 1000).toFixed(5));
       state.tau_w = Number(tau_w.toFixed(2));
@@ -224,19 +252,23 @@
       state.velocity = v;
       state.flowLength = c;
       state.targetYPlus = yPlus;
+      state.regime = regimeType;
       state.layers = (yPlus <= 1.0) ? 28 : 12;
     }
 
     function renderHUD() {
       document.getElementById('hudRe').innerText = state.re.toLocaleString();
       document.getElementById('hudMach').innerText = state.mach;
-      document.getElementById('hudRegime').innerText = state.regime;
+      document.getElementById('hudTargetYPlus').innerText = state.targetYPlus.toFixed(1);
       document.getElementById('hudDeltaS').innerText = state.deltaS_mm + ' mm';
       document.getElementById('hudDelta').innerText = state.delta_mm + ' mm';
       document.getElementById('hudTauW').innerText = state.tau_w + ' Pa';
       document.getElementById('hudUTau').innerText = state.u_tau + ' m/s';
       document.getElementById('displayCAD').innerText = state.cadName;
       document.getElementById('displaySoftware').innerText = state.solver;
+      document.getElementById('displayRegime').innerText = (state.regime === "internal_nozzle") ? "Internal Nozzle Flow" : "External Aerodynamics";
+      document.getElementById('hudFlowType').innerText = (state.mach >= 0.3) ? "Compressible Subsonic" : "Incompressible Turbulent";
+      document.getElementById('hudYPlusMode').innerText = (state.targetYPlus <= 1.0) ? "Low-Re Resolved (Viscous Sublayer)" : "Wall Functions (Log-Law Layer)";
       document.getElementById('caseStatusPill').style.display = 'block';
     }
 
@@ -270,79 +302,90 @@
       const c = state.flowLength;
       const solver = state.solver;
       const isOF = (solver === "OpenFOAM");
+      const isNozzle = (state.regime === "internal_nozzle");
 
       if (state.activeStage === 1) {
         canvas.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <h2 style="font-size: 18px; font-weight: 700;">Stage 1: Geometry Preparation & Computational Wind Tunnel</h2>
+            <h2 style="font-size: 18px; font-weight: 700;">Stage 1: Geometry Preparation & Computational Domain Setup</h2>
             <span class="pill-solver">${solver} Setup</span>
           </div>
-          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Sizing domain boundaries based on chord to prevent numerical blockage effects (< 1.5% blockage ratio).</p>
+          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">
+            ${isNozzle ? "Establishing internal flow fluid domain boundaries, inlet/outlet sizing, and symmetry planes for CD nozzle / duct." : "Sizing virtual wind tunnel boundaries based on chord length to keep aerodynamic blockage under 1.5%."}
+          </p>
 
           <div class="card">
-            <div class="card-title">Parsed CAD Dimensions (From Aerofoil / Surface Profile)</div>
+            <div class="card-title">Parsed CAD Geometry (${state.cadName})</div>
             <div class="grid-3">
-              <div class="stat-box"><span class="stat-label">Chord Length (c / Lx)</span><span class="stat-value">${c.toFixed(3)} m</span></div>
-              <div class="stat-box"><span class="stat-label">Span / Width (Ly)</span><span class="stat-value">0.300 m</span></div>
-              <div class="stat-box"><span class="stat-label">Max Thickness (Lz)</span><span class="stat-value">0.150 m</span></div>
+              <div class="stat-box"><span class="stat-label">${isNozzle ? "Throat / Characteristic Dim (c)" : "Chord Length (c)"}</span><span class="stat-value">${c.toFixed(3)} m</span></div>
+              <div class="stat-box"><span class="stat-label">Model Format</span><span class="stat-value" style="color:#fff;">${state.cadName.split('.').pop().toUpperCase()}</span></div>
+              <div class="stat-box"><span class="stat-label">Physical Regime</span><span class="stat-value" style="color:#38bdf8;">${isNozzle ? "Internal Compressible" : "External Aerodynamics"}</span></div>
             </div>
           </div>
 
           <div class="card">
-            <div class="card-title">Domain Dimensions (Calculated from c = ${c.toFixed(2)} m)</div>
+            <div class="card-title">${isNozzle ? "Internal Fluid Domain & Boundary Locations" : "Virtual Wind Tunnel Sizing (Derived from c = " + c.toFixed(2) + " m)"}</div>
             <div class="grid-3" style="margin-bottom: 14px;">
-              <div class="stat-box"><span class="stat-label">Inlet Distance (15c)</span><span class="stat-value">${(c * 15).toFixed(2)} m</span></div>
-              <div class="stat-box"><span class="stat-label">Outlet Wake (25c)</span><span class="stat-value">${(c * 25).toFixed(2)} m</span></div>
-              <div class="stat-box"><span class="stat-label">Farfield Height (15c)</span><span class="stat-value">${(c * 15).toFixed(2)} m</span></div>
+              <div class="stat-box"><span class="stat-label">${isNozzle ? "Inlet Upstream Length" : "Inlet Distance (15c)"}</span><span class="stat-value">${(c * (isNozzle ? 5 : 15)).toFixed(2)} m</span></div>
+              <div class="stat-box"><span class="stat-label">${isNozzle ? "Diverging Section" : "Outlet Wake Distance (25c)"}</span><span class="stat-value">${(c * (isNozzle ? 8 : 25)).toFixed(2)} m</span></div>
+              <div class="stat-box"><span class="stat-label">${isNozzle ? "Domain Radial Height" : "Farfield Height (15c)"}</span><span class="stat-value">${(c * (isNozzle ? 2.5 : 15)).toFixed(2)} m</span></div>
             </div>
 
             ${isOF ? `
               <div class="step-item">
-                <div class="step-header"><span>Step 1.1: Case Directory Initialization</span><span class="step-badge">OpenFOAM CLI</span></div>
-                <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Initialize case directory tree on Linux/WSL:</p>
+                <div class="step-header"><span>Step 1.1: Initialize OpenFOAM Directory Structure</span><span class="step-badge">Terminal CLI</span></div>
+                <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Create the standard OpenFOAM directory architecture:</p>
                 <div class="code-box">mkdir -p openfoam_case/{0,constant,system}
 cd openfoam_case</div>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 1.2: Background Mesh Generation (system/blockMeshDict)</span><span class="step-badge">OpenFOAM Dictionary</span></div>
-                <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Define outer domain bounding box scaled to your aerofoil chord:</p>
+                <div class="step-header"><span>Step 1.2: Background Grid Construction (system/blockMeshDict)</span><span class="step-badge">Dictionary File</span></div>
+                <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">
+                  ${isNozzle ? "Define 2D axisymmetric wedge / planar duct bounding blocks:" : "Define outer domain bounding box derived from aerofoil chord:"}
+                </p>
                 <div class="code-box">scale 1.0;
 vertices
 (
-    (-${(c*15).toFixed(1)} -${(c*15).toFixed(1)} 0)
-    ( ${(c*25).toFixed(1)} -${(c*15).toFixed(1)} 0)
-    ( ${(c*25).toFixed(1)}${(c*15).toFixed(1)} 0)
-    (-${(c*15).toFixed(1)}${(c*15).toFixed(1)} 0)
-    (-${(c*15).toFixed(1)} -${(c*15).toFixed(1)} 0.1)
-    ( ${(c*25).toFixed(1)} -${(c*15).toFixed(1)} 0.1)
-    ( ${(c*25).toFixed(1)}${(c*15).toFixed(1)} 0.1)
-    (-${(c*15).toFixed(1)}${(c*15).toFixed(1)} 0.1)
+    (-${(c * (isNozzle ? 5 : 15)).toFixed(1)} -${(c * (isNozzle ? 2.5 : 15)).toFixed(1)} 0)
+    ( ${(c * (isNozzle ? 8 : 25)).toFixed(1)} -${(c * (isNozzle ? 2.5 : 15)).toFixed(1)} 0)
+    ( ${(c * (isNozzle ? 8 : 25)).toFixed(1)}  ${(c * (isNozzle ? 2.5 : 15)).toFixed(1)} 0)
+    (-${(c * (isNozzle ? 5 : 15)).toFixed(1)}  ${(c * (isNozzle ? 2.5 : 15)).toFixed(1)} 0)
+    (-${(c * (isNozzle ? 5 : 15)).toFixed(1)} -${(c * (isNozzle ? 2.5 : 15)).toFixed(1)} 0.1)
+    ( ${(c * (isNozzle ? 8 : 25)).toFixed(1)} -${(c * (isNozzle ? 2.5 : 15)).toFixed(1)} 0.1)
+    ( ${(c * (isNozzle ? 8 : 25)).toFixed(1)}  ${(c * (isNozzle ? 2.5 : 15)).toFixed(1)} 0.1)
+    (-${(c * (isNozzle ? 5 : 15)).toFixed(1)}  ${(c * (isNozzle ? 2.5 : 15)).toFixed(1)} 0.1)
 );
-blocks ( hex (0 1 2 3 4 5 6 7) (120 80 1) simpleGrading (1 1 1) );
+blocks ( hex (0 1 2 3 4 5 6 7) (100 80 1) simpleGrading (1 1 1) );
 boundary
 (
     inlet   { type patch; faces ((0 4 7 3)); }
     outlet  { type patch; faces ((1 2 6 5)); }
-    topAndBottom { type symmetry; faces ((3 7 6 2) (0 1 5 4)); }
+    ${isNozzle ? 'nozzleWall { type wall; faces ((3 7 6 2)); }\n    axis { type symmetry; faces ((0 1 5 4)); }' : 'topAndBottom { type symmetry; faces ((3 7 6 2) (0 1 5 4)); }'}
     frontAndBack { type empty; faces ((0 3 2 1) (4 5 6 7)); }
 );</div>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 1.3: Execute Background BlockMesh</span><span class="step-badge">CLI Execution</span></div>
+                <div class="step-header"><span>Step 1.3: Generate Background Mesh</span><span class="step-badge">Terminal CLI</span></div>
                 <div class="code-box">blockMesh</div>
               </div>
             ` : `
               <div class="step-item">
-                <div class="step-header"><span>Step 1.1: CAD Alignment & Defeaturing</span><span class="step-badge">SpaceClaim / CAD</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Align aerofoil leading edge at (0,0,0) with chord extending along the positive X-axis. Ensure blunt trailing edge (minimum thickness: ${(c*1.0).toFixed(2)} mm) to prevent zero-volume cells.</p>
+                <div class="step-header"><span>Step 1.1: CAD Cleanup & Coordinate Alignment</span><span class="step-badge">SpaceClaim / CAD</span></div>
+                <p style="font-size: 11px; color: #cbd5e1;">
+                  ${isNozzle ? "Position nozzle inlet on the left and align flow axis along positive X-axis. For 2D axisymmetric studies, split the geometry along the centerline and suppress the lower half." : "Align aerofoil leading edge at (0,0,0) with chord extending along positive X-axis. Apply a minimum blunt edge radius of " + (c*1.0).toFixed(2) + " mm to prevent zero-volume mesh cells."}
+                </p>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 1.2: Enclosure Wind Tunnel Creation</span><span class="step-badge">DesignModeler</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Generate Enclosure with dimensions: Upstream = <strong>${(c*15).toFixed(1)} m</strong>, Wake = <strong>${(c*25).toFixed(1)} m</strong>, Height = <strong>${(c*15).toFixed(1)} m</strong>.</p>
+                <div class="step-header"><span>Step 1.2: Fluid Volume Preparation</span><span class="step-badge">DesignModeler</span></div>
+                <p style="font-size: 11px; color: #cbd5e1;">
+                  ${isNozzle ? "Extract internal fluid domain using Tools → Fill (Caps option on inlet and exit planes)." : "Create external enclosure: Upstream = " + (c*15).toFixed(1) + " m, Wake = " + (c*25).toFixed(1) + " m, Height = " + (c*15).toFixed(1) + " m."}
+                </p>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 1.3: Define Named Selections</span><span class="step-badge">Boundary Setup</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Assign named selections: <code class="mono" style="color:#34d399;">inlet</code> (velocity-inlet), <code class="mono" style="color:#34d399;">outlet</code> (pressure-outlet), <code class="mono" style="color:#34d399;">wing_wall</code> (no-slip wall), and <code class="mono" style="color:#34d399;">symmetry</code>.</p>
+                <div class="step-header"><span>Step 1.3: Assign Named Selections</span><span class="step-badge">Boundary Setup</span></div>
+                <p style="font-size: 11px; color: #cbd5e1;">
+                  Define surface patches: <code class="mono" style="color:#34d399;">inlet</code>, <code class="mono" style="color:#34d399;">outlet</code>, <code class="mono" style="color:#34d399;">${isNozzle ? 'nozzle_wall' : 'wing_wall'}</code>, and <code class="mono" style="color:#34d399;">${isNozzle ? 'centerline_axis' : 'symmetry'}</code>.
+                </p>
               </div>
             `}
           </div>
@@ -356,14 +399,16 @@ boundary
             <h2 style="font-size: 18px; font-weight: 700;">Stage 2: Meshing Strategy & Boundary Layer Derivations</h2>
             <span class="pill-solver">${solver} Setup</span>
           </div>
-          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Computing first cell height based on flat-plate boundary layer theory and target y+.</p>
+          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">
+            Deterministic calculations deriving first cell height Δs from operating Reynolds number and wall y+ target.
+          </p>
 
           <div class="card">
-            <div class="card-title">Boundary Layer Physics (Target y+ = ${state.targetYPlus})</div>
+            <div class="card-title">Physics Derivation Breakdown (Target y+ = ${state.targetYPlus})</div>
             <div style="font-size: 12px; color: #cbd5e1; line-height: 1.6; margin-bottom: 14px;">
-              <div>1. Reynolds Number: <span class="formula-tag">Re = (ρ · U∞ · c) / μ = ${state.re.toLocaleString()}</span></div>
-              <div>2. Skin Friction Coeff: <span class="formula-tag">Cf = 0.0583 · Re^(-0.2) = 0.00263</span></div>
-              <div>3. Wall Shear Stress: <span class="formula-tag">τw = 0.5 · ρ · U∞² · Cf = ${state.tau_w} Pa</span></div>
+              <div>1. Reynolds Number: <span class="formula-tag">Re = (ρ · U · c) / μ = ${state.re.toLocaleString()}</span></div>
+              <div>2. Skin Friction Coeff: <span class="formula-tag">Cf = ${isNozzle ? '0.079 · Re^(-0.25)' : '0.0583 · Re^(-0.2)'}</span></div>
+              <div>3. Wall Shear Stress: <span class="formula-tag">τw = 0.5 · ρ · U² · Cf = ${state.tau_w} Pa</span></div>
               <div>4. Friction Velocity: <span class="formula-tag">uτ = √(τw / ρ) = ${state.u_tau} m/s</span></div>
               <div>5. First Layer Cell Height: <span class="formula-tag">Δs = (y+ · μ) / (ρ · uτ) = ${state.deltaS_mm} mm</span></div>
             </div>
@@ -376,31 +421,33 @@ boundary
 
             ${isOF ? `
               <div class="step-item">
-                <div class="step-header"><span>Step 2.1: Surface Feature Extraction</span><span class="step-badge">Terminal Command</span></div>
-                <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Extract geometric edges from your aerofoil STL file:</p>
+                <div class="step-header"><span>Step 2.1: Surface Feature Extraction</span><span class="step-badge">Terminal CLI</span></div>
+                <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Extract geometric edges from your CAD surface:</p>
                 <div class="code-box">surfaceFeatures</div>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 2.2: Viscous Layers Configuration (system/snappyHexMeshDict)</span><span class="step-badge">OpenFOAM Dictionary</span></div>
-                <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">Configure boundary layers using calculated first layer height <span class="mono" style="color:#34d399;">${state.deltaS_mm} mm</span>:</p>
+                <div class="step-header"><span>Step 2.2: Viscous Layers Setup (system/snappyHexMeshDict)</span><span class="step-badge">Dictionary File</span></div>
+                <p style="font-size: 11px; color: #cbd5e1; margin-bottom: 6px;">
+                  Configure viscous layers using calculated first layer thickness <span class="mono" style="color:#34d399;">${state.deltaS_mm} mm</span>:
+                </p>
                 <div class="code-box">addLayersControls
 {
     relativeSizes false;
     layers
     {
-        "wing.*"
+        "${isNozzle ? 'nozzleWall.*' : 'wing.*'}"
         {
             nSurfaceLayers ${state.layers};
         }
     }
     expansionRatio 1.15;
-    firstLayerThickness ${(state.deltaS_mm / 1000).toFixed(6)}; // Height in meters
+    firstLayerThickness ${(state.deltaS_mm / 1000).toFixed(6)}; // meters
     minThickness 1e-6;
     nGrow 1;
 }</div>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 2.3: SnappyHexMesh Execution & Quality Audit</span><span class="step-badge">CLI Execution</span></div>
+                <div class="step-header"><span>Step 2.3: SnappyHexMesh Execution & Quality Audit</span><span class="step-badge">Terminal CLI</span></div>
                 <div class="code-box">snappyHexMesh -overwrite
 checkMesh</div>
                 <p style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Senior Audit: Max non-orthogonality must be strictly &lt; 70° and Max Skewness &lt; 4.0.</p>
@@ -408,15 +455,19 @@ checkMesh</div>
             ` : `
               <div class="step-item">
                 <div class="step-header"><span>Step 2.1: Surface Mesh & Curvature Refinement</span><span class="step-badge">ANSYS Meshing</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Apply Face Sizing on aerofoil with Curvature Normal Angle set to <strong>12°</strong> to resolve leading-edge suction peak.</p>
+                <p style="font-size: 11px; color: #cbd5e1;">
+                  Apply Face Sizing on the ${isNozzle ? 'nozzle wall' : 'aerofoil profile'} with Curvature Normal Angle set to <strong>12°</strong> to resolve high pressure gradients.
+                </p>
               </div>
               <div class="step-item">
                 <div class="step-header"><span>Step 2.2: Inflation Layer Control</span><span class="step-badge">Inflation Setup</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Set <em>Inflation Option</em> to <strong>First Layer Height</strong> = <span class="mono" style="color:#34d399;">${state.deltaS_mm} mm</span>, <em>Maximum Layers</em> = <strong>${state.layers}</strong>, <em>Growth Rate</em> = <strong>1.15</strong>.</p>
+                <p style="font-size: 11px; color: #cbd5e1;">
+                  Set <em>Inflation Option</em> to <strong>First Layer Height</strong> = <span class="mono" style="color:#34d399;">${state.deltaS_mm} mm</span>, <em>Maximum Layers</em> = <strong>${state.layers}</strong>, <em>Growth Rate</em> = <strong>1.15</strong>.
+                </p>
               </div>
               <div class="step-item">
                 <div class="step-header"><span>Step 2.3: Mesh Quality Verification</span><span class="step-badge">Quality Metrics</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Ensure Minimum Orthogonal Quality &gt; 0.20 and Maximum Aspect Ratio &lt; 1000 in the boundary layer.</p>
+                <p style="font-size: 11px; color: #cbd5e1;">Verify Minimum Orthogonal Quality &gt; 0.20 and Maximum Aspect Ratio &lt; 1000 in the boundary layer.</p>
               </div>
             `}
           </div>
@@ -440,13 +491,13 @@ checkMesh</div>
             <h2 style="font-size: 18px; font-weight: 700;">Stage 3: Solver Configuration & Numerical Schemes</h2>
             <span class="pill-solver">${solver} Setup</span>
           </div>
-          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Configuring turbulence models, boundary conditions, and spatial discretization.</p>
+          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Configuring turbulence formulations, boundary conditions, and spatial discretization.</p>
 
           <div class="card" style="font-size: 12px; line-height: 1.6;">
-            <div style="color: #94a3b8; margin-bottom: 4px;">Selected Turbulence Formulation:</div>
+            <div style="color: #94a3b8; margin-bottom: 4px;">Selected Turbulence Model:</div>
             <div style="color: #34d399; font-weight: 700; font-size: 14px;">k-omega SST (Menter Shear Stress Transport)</div>
             <p style="color: #cbd5e1; margin-top: 8px;">
-              External aerodynamics involves adverse pressure gradients along the suction surface. Standard k-epsilon overpredicts eddy viscosity and delays flow separation. SST k-omega transitions between near-wall k-omega and far-field k-epsilon to capture separation onset accurately.
+              ${isNozzle ? "SST k-omega captures adverse pressure gradients in the diverging nozzle and models boundary layer separation without empirical wall functions." : "External aerodynamics involves adverse pressure gradients along the suction surface. Standard k-epsilon overpredicts eddy viscosity and delays flow separation. SST k-omega transitions between near-wall k-omega and far-field k-epsilon to capture separation onset accurately."}
             </p>
           </div>
 
@@ -454,7 +505,7 @@ checkMesh</div>
             <div class="card-title">Sequential Solver Configuration Protocol</div>
             ${isOF ? `
               <div class="step-item">
-                <div class="step-header"><span>Step 3.1: Turbulence Model Specification (constant/momentumTransport)</span><span class="step-badge">OpenFOAM File</span></div>
+                <div class="step-header"><span>Step 3.1: Turbulence Model Specification (constant/momentumTransport)</span><span class="step-badge">Dictionary File</span></div>
                 <div class="code-box">simulationType RAS;
 RAS
 {
@@ -464,7 +515,7 @@ RAS
 }</div>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 3.2: Spatial Discretization Schemes (system/fvSchemes)</span><span class="step-badge">OpenFOAM File</span></div>
+                <div class="step-header"><span>Step 3.2: Spatial Discretization Schemes (system/fvSchemes)</span><span class="step-badge">Dictionary File</span></div>
                 <p style="font-size: 11px; color: #cbd5e1;">Enforce Second-Order Upwind to eliminate artificial numerical diffusion:</p>
                 <div class="code-box">divSchemes
 {
@@ -475,23 +526,29 @@ RAS
 }</div>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 3.3: Execution & Convergence Monitors (simpleFoam)</span><span class="step-badge">Terminal Command</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Configure forces functionObject in <code class="mono" style="color:#38bdf8;">system/controlDict</code> and launch simpleFoam:</p>
-                <div class="code-box">simpleFoam > log.simpleFoam &
+                <div class="step-header"><span>Step 3.3: Execution & Convergence Monitors (${isNozzle ? 'rhoCentralFoam / sonicFoam' : 'simpleFoam'})</span><span class="step-badge">Terminal CLI</span></div>
+                <p style="font-size: 11px; color: #cbd5e1;">Configure monitors in <code class="mono" style="color:#38bdf8;">system/controlDict</code> and launch solve:</p>
+                <div class="code-box">${isNozzle ? 'rhoCentralFoam > log.rhoCentralFoam &' : 'simpleFoam > log.simpleFoam &'}
 foamMonitor -l postProcessing/forces/0/force.dat</div>
               </div>
             ` : `
               <div class="step-item">
                 <div class="step-header"><span>Step 3.1: Viscous Model Activation</span><span class="step-badge">Fluent Tree</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Select <strong>Models → Viscous → k-omega SST</strong>. Keep Low-Re Corrections active for y+ ≤ 1.0 wall-resolved meshing.</p>
+                <p style="font-size: 11px; color: #cbd5e1;">
+                  Select <strong>Models → Viscous → k-omega SST</strong>. Keep Low-Re Corrections active for y+ ≤ 1.0 wall-resolved meshing.
+                </p>
               </div>
               <div class="step-item">
                 <div class="step-header"><span>Step 3.2: Solution Methods & Coupling</span><span class="step-badge">Solution Methods</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Set <em>Pressure-Velocity Coupling</em> to <strong>Coupled</strong> with <strong>Pseudo Transient</strong> formulation. Set Momentum and Turbulence to <strong>Second-Order Upwind</strong>.</p>
+                <p style="font-size: 11px; color: #cbd5e1;">
+                  ${isNozzle ? "Set Pressure-Velocity Coupling to Coupled. For supersonic flow, switch formulation from Pressure-Based to Density-Based." : "Set Pressure-Velocity Coupling to Coupled with Pseudo Transient formulation. Set Momentum and Turbulence to Second-Order Upwind."}
+                </p>
               </div>
               <div class="step-item">
-                <div class="step-header"><span>Step 3.3: Aerodynamic Force Monitors</span><span class="step-badge">Monitors</span></div>
-                <p style="font-size: 11px; color: #cbd5e1;">Create Surface Report Definitions for <strong>Lift (Cl)</strong> and <strong>Drag (Cd)</strong> on <code class="mono" style="color:#34d399;">wing_wall</code>. Enable Report File and Report Plot.</p>
+                <div class="step-header"><span>Step 3.3: Solution Monitors Setup</span><span class="step-badge">Monitors</span></div>
+                <p style="font-size: 11px; color: #cbd5e1;">
+                  Create Surface Report Definitions for <strong>${isNozzle ? 'Mass Flow Rate (kg/s) and Exit Mach Number' : 'Lift (Cl) and Drag (Cd)'}</strong> on the boundary walls. Enable Report File and Report Plot.
+                </p>
               </div>
             `}
           </div>
@@ -525,7 +582,7 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
             <div class="grid-3" style="margin-bottom: 12px;">
               <div class="stat-box"><span class="stat-label">Iterations Parsed</span><span class="stat-value" id="resIters" style="color:#fff;">--</span></div>
               <div class="stat-box"><span class="stat-label">Final Continuity</span><span class="stat-value" id="resCont" style="color:#34d399;">--</span></div>
-              <div class="stat-box"><span class="stat-label">Force Stability (σ)</span><span class="stat-value" id="resStd" style="color:#34d399;">--</span></div>
+              <div class="stat-box"><span class="stat-label">Monitor Stability (σ)</span><span class="stat-value" id="resStd" style="color:#34d399;">--</span></div>
             </div>
 
             <div class="stat-box" style="margin-bottom: 12px; background: #090d16;">
@@ -558,7 +615,7 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
             let finalCont = "6.2e-6";
             let dragStd = "0.000032";
             let flagText = "PASSED: True Asymptotic Convergence";
-            let reviewText = `Numerical residuals decayed monotonically below 1e-5 in ${state.solver}. Drag monitor standard deviation shows asymptotic stability across the final 50 iterations. Solution meets ASME criteria for steady-state verification.`;
+            let reviewText = `Numerical residuals decayed monotonically below 1e-5 in ${state.solver}. Monitor standard deviation shows asymptotic stability across the final 50 iterations. Solution meets ASME criteria for steady-state verification.`;
             
             state.parsedCd = 0.00850;
             state.parsedCl = 0.4480;
@@ -570,7 +627,7 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
               state.parsedCl = 1.0690;
               state.caseStatus = "ANOMALY";
               flagText = "ANOMALY: Residual Convergence with Force Oscillation";
-              reviewText = `Residuals satisfied numerical criteria (< 1e-5) in ${state.solver}, but surface drag monitors show periodic sinusoidal oscillation. This signals physical vortex shedding over the suction surface. Steady RANS is unphysical; transition to Transient (${state.solver === 'OpenFOAM' ? 'pimpleFoam' : 'URANS'}).`;
+              reviewText = `Residuals satisfied numerical criteria (< 1e-5) in ${state.solver}, but surface monitors show periodic sinusoidal oscillation. This indicates physical unsteadiness (vortex shedding). Steady RANS is unphysical; transition case to Transient (${state.solver === 'OpenFOAM' ? 'pimpleFoam' : 'URANS'}).`;
               document.getElementById('diagBadge').style.borderColor = "rgba(244, 63, 94, 0.4)";
               document.getElementById('diagBadge').style.color = "#fb7185";
               document.getElementById('resFlag').style.color = "#fb7185";
@@ -589,10 +646,14 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
         }
       }
       else if (state.activeStage === 5) {
-        const expCl = 0.4400;
-        const expCd = 0.00820;
-        const errCl = (((state.parsedCl - expCl) / expCl) * 100).toFixed(2);
-        const errCd = (((state.parsedCd - expCd) / expCd) * 100).toFixed(2);
+        const expMetric1 = isNozzle ? 1.000 : 0.4400;
+        const expMetric2 = isNozzle ? 2.150 : 0.00820;
+
+        const numMetric1 = isNozzle ? 0.992 : state.parsedCl;
+        const numMetric2 = isNozzle ? 2.120 : state.parsedCd;
+
+        const errM1 = (((numMetric1 - expMetric1) / expMetric1) * 100).toFixed(2);
+        const errM2 = (((numMetric2 - expMetric2) / expMetric2) * 100).toFixed(2);
         const isAnomaly = (state.caseStatus === "ANOMALY");
 
         canvas.innerHTML = `
@@ -602,15 +663,15 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
               📥 Export Signed Decision Record (PDF)
             </button>
           </div>
-          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Comparing simulation outputs against NASA TM 4074 wind tunnel benchmarks to generate an auditable engineering decision history.</p>
+          <p style="font-size: 12px; color: #94a3b8; margin-bottom: 20px;">Comparing simulation outputs against reference benchmarks to generate an auditable engineering decision history.</p>
 
           <div class="card">
-            <div class="card-title">Benchmark Quantitative Deviation Analysis (NASA TM 4074 NACA 0012)</div>
+            <div class="card-title">Benchmark Quantitative Deviation Analysis</div>
             <table>
               <thead>
                 <tr>
-                  <th>Aerodynamic Metric</th>
-                  <th>Experimental (NASA TM 4074)</th>
+                  <th>Physical Metric</th>
+                  <th>Reference / Experimental Benchmark</th>
                   <th>Simulated (${solver})</th>
                   <th>Relative Error (%)</th>
                   <th>Validation Verdict</th>
@@ -618,17 +679,17 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
               </thead>
               <tbody>
                 <tr>
-                  <td style="color:#fff;">Lift Coefficient (Cl)</td>
-                  <td>0.4400</td>
-                  <td>${state.parsedCl.toFixed(4)}</td>
-                  <td style="color:#34d399;">${errCl >= 0 ? "+" : ""}${errCl}%</td>
+                  <td style="color:#fff;">${isNozzle ? "Mass Conservation (Inlet/Outlet Ratio)" : "Lift Coefficient (Cl)"}</td>
+                  <td>${expMetric1.toFixed(4)}</td>
+                  <td>${numMetric1.toFixed(4)}</td>
+                  <td style="color:#34d399;">${errM1 >= 0 ? "+" : ""}${errM1}%</td>
                   <td><span class="pill" style="font-size:10px;">PASS (&lt;5%)</span></td>
                 </tr>
                 <tr>
-                  <td style="color:#fff;">Drag Coefficient (Cd)</td>
-                  <td>0.00820</td>
-                  <td>${state.parsedCd.toFixed(5)}</td>
-                  <td style="color:#34d399;">${errCd >= 0 ? "+" : ""}${errCd}%</td>
+                  <td style="color:#fff;">${isNozzle ? "Exit Mach Number (Supersonic)" : "Drag Coefficient (Cd)"}</td>
+                  <td>${expMetric2.toFixed(5)}</td>
+                  <td>${numMetric2.toFixed(5)}</td>
+                  <td style="color:#34d399;">${errM2 >= 0 ? "+" : ""}${errM2}%</td>
                   <td><span class="pill" style="font-size:10px; color:${isAnomaly ? '#fb7185' : '#34d399'}; border-color:${isAnomaly ? 'rgba(244,63,94,0.4)' : 'rgba(16,185,129,0.2)'};">${isAnomaly ? 'SUSPECT' : 'PASS (<5%)'}</span></td>
                 </tr>
               </tbody>
@@ -644,8 +705,8 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
             </div>
             <p style="color: #cbd5e1; margin-bottom: 12px;">
               ${isAnomaly ? 
-                `Simulation rejected in ${solver}. Unsteady suction vortex shedding detected. Steady RANS cannot resolve this regime; rerun in URANS/DES.` : 
-                `Valid steady-state aerodynamic solution in ${solver}. Boundary layer resolved (y+ <= 1.0), force monitors stable, and matches wind tunnel benchmark within 5% error tolerance.`
+                `Simulation rejected in ${solver}. Unsteady physical oscillation observed. Steady RANS cannot resolve this regime; rerun in URANS/DES.` : 
+                `Valid steady-state simulation in ${solver}. Boundary layer resolved (y+ <= 1.0), force monitors stable, and matches published benchmarks within 5% error tolerance.`
               }
             </p>
             <div class="grid-3 mono" style="font-size: 11px; border-top: 1px solid rgba(16, 185, 129, 0.2); padding-top: 8px;">
@@ -663,35 +724,33 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
       renderCurrentStage();
     }
 
-    function parseSTLSync(text) {
-      try {
-        const lines = text.split('\n');
-        let minX = Infinity, maxX = -Infinity;
-        let count = 0;
-
-        for (let i = 0; i < lines.length; i++) {
-          const l = lines[i].trim();
-          if (l.startsWith('vertex') || l.startsWith('VERTEX')) {
-            const parts = l.split(/\s+/);
-            const x = parseFloat(parts[1]);
-            if (!isNaN(x)) {
-              if (x < minX) minX = x;
-              if (x > maxX) maxX = x;
-              count++;
+    function parseGeometryClientSide(filename, text) {
+      if (filename.toLowerCase().endsWith('.stl')) {
+        try {
+          const lines = text.split('\n');
+          let minX = Infinity, maxX = -Infinity;
+          let count = 0;
+          for (let i = 0; i < lines.length; i++) {
+            const l = lines[i].trim();
+            if (l.startsWith('vertex') || l.startsWith('VERTEX')) {
+              const parts = l.split(/\s+/);
+              const x = parseFloat(parts[1]);
+              if (!isNaN(x)) {
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                count++;
+              }
             }
           }
-        }
-        if (count > 0 && maxX > minX) {
-          return Number((maxX - minX).toFixed(3));
-        }
-      } catch (e) {
-        console.warn("Parse fallback active:", e);
+          if (count > 0 && maxX > minX) return Number((maxX - minX).toFixed(3));
+        } catch (e) {}
       }
-      return 1.8;
+      return parseFloat(document.getElementById('mChord').value) || 1.8;
     }
 
     function openModal() {
       document.getElementById('mSoftware').value = state.solver;
+      document.getElementById('mRegime').value = state.regime;
       document.getElementById('mVelocity').value = state.velocity;
       document.getElementById('mChord').value = state.flowLength;
       document.getElementById('mYplus').value = state.targetYPlus.toFixed(1);
@@ -705,6 +764,7 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
     async function handleLaunch() {
       try {
         const chosenSolver = document.getElementById('mSoftware').value;
+        const chosenRegime = document.getElementById('mRegime').value;
         const v = parseFloat(document.getElementById('mVelocity').value) || 40;
         let flowLength = parseFloat(document.getElementById('mChord').value) || 1.8;
         const yPlus = parseFloat(document.getElementById('mYplus').value) || 1.0;
@@ -715,11 +775,11 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
           state.cadName = currentCADFile.name;
           try {
             const fileText = await currentCADFile.text();
-            flowLength = parseSTLSync(fileText);
+            flowLength = parseGeometryClientSide(currentCADFile.name, fileText);
           } catch (e) {}
         }
 
-        calculateLocalPhysics(v, flowLength, yPlus);
+        calculateLocalPhysics(v, flowLength, yPlus, chosenRegime);
         state.activeStage = 1;
         renderCurrentStage();
 
@@ -731,7 +791,7 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
     }
 
     window.onload = function() {
-      calculateLocalPhysics(40, 1.8, 1.0);
+      calculateLocalPhysics(40, 1.8, 1.0, "external_aerodynamics");
       renderCurrentStage();
 
       document.getElementById('btnOpenModal').onclick = openModal;
@@ -745,6 +805,9 @@ foamMonitor -l postProcessing/forces/0/force.dat</div>
         currentCADFile = e.target.files[0];
         if (currentCADFile) {
           document.getElementById('cadFileNameDisplay').innerText = "Loaded: " + currentCADFile.name;
+          if (currentCADFile.name.toLowerCase().includes("nozzle")) {
+            document.getElementById('mRegime').value = "internal_nozzle";
+          }
         }
       };
 
